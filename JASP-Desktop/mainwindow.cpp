@@ -63,6 +63,7 @@
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef QT_DEBUG
 #include "analysisforms/basregressionlinearlinkform.h"
 #include "analysisforms/Bain/bainancovabayesianform.h"
@@ -761,10 +762,12 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+<<<<<<< HEAD
 
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
+
 	else if (name == "BainTTestBayesianOneSample")
 		form = new BainTTestBayesianOneSampleForm(contentArea);
 	else if (name == "BainTTestBayesianIndependentSamples")
@@ -781,7 +784,9 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BainCorrelationBayesianForm(contentArea);
 	else if (name == "BainRegressionLinearBayesian")
 		form = new BainRegressionLinearBayesianForm(contentArea);
+
 #endif
+
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
