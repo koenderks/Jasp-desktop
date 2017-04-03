@@ -78,7 +78,6 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 	errorFootnotes <- ttest.results[[8]]
 	plotres <- ttest.results[[9]]
 	
-	print(plotres)
 
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)

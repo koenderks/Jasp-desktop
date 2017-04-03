@@ -214,7 +214,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     descriptPlotVariables <- list()
     descriptivesPlots <- list()
     BFplots <- list()
-    BFplotvariable <- list()
+    BFplotvariables <- list()
     errorFootnotes <- rep("no", length(options$variables))
     
     # Retrieve the state
@@ -298,6 +298,37 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
             }
             
             descriptPlotVariables[[length(descriptPlotVariables)+1]] <- variable
+            
+        }
+        
+        if (options$plotPriorAndPosterior) {
+            
+            if (!is.null(state) && variable %in% state$BFplotvariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$testValue == FALSE && diff$
+                                                                                                                                                             hypothesis == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && options$plotPriorAndPosterior) {
+                
+                # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+                # then, if the requested plot already exists, use it
+                
+                index <- which(state$BFplotvariables == variable)
+                
+                BFplots[[length(BFplots)+1]] <- state$BFplots[[index]]
+                
+                
+            } else {
+                
+                BFplot <- list()
+                
+                BFplot[["title"]] <- variable
+                BFplot[["width"]] <- options$plotWidth
+                BFplot[["height"]] <- options$plotHeight
+                BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+                BFplot[["status"]] <- "waiting"
+                BFplot[["data"]] <- ""
+                
+                BFplots[[length(BFplots)+1]] <- BFplot
+            }
+            
+            BFplotvariables[[length(BFplotvariables)+1]] <- variable
             
         }
         
@@ -399,6 +430,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         
         Bainresult <- list()
         Bainvariables <- list()
+        BFind <- 1
         
         for (variable in options[["variables"]])
         {
@@ -509,76 +541,128 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 ttest.rows[[i]] <- result_test
             } #
             
-            if(options$plotPriorAndPosterior){ # if bayes factor plots are wanted
+            if (options$plotPriorAndPosterior) {
                 
-                if (!is.null(state) && variable %in% state$options$variables && variable %in% state$Bainvariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE)))) {
+                
+                if (!is.null(state) && variable %in% state$BFplotvariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$testValue == FALSE && diff$
+                                                                                                                                                                 hypothesis == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && options$plotPriorAndPosterior) {
                     
                     # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
                     # then, if the requested plot already exists, use it
-                    if (!is.null(state) && variable %in% state$BFplotvariable && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE)))) {
-                        
-                        index <- which(state$BFplotvariable == variable)
-                        
-                        BFplots[[i]] <- state$BFplots[[index]]
-                        
-                        BFplotvariable[[i]] <- state$BFplotvariable[[index]]
-                        
-                    } else {
-                        
-                        index <- which(state$Bainvariables == variable)
-                        
-                        BFplot <- list()
-                        
-                        BFplot[["title"]] <- variable
-                        BFplot[["width"]] <- options$plotWidth
-                        BFplot[["height"]] <- options$plotHeight
-                        BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-                        BFplot[["status"]] <- "waiting"
-                        BFplot[["data"]] <- ""
-                        
-                        BFplotvariable[[i]] <- variable
-                        
-                        p <- try(silent= FALSE, expr= {
-                            
-                            image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-                            Bain::plot.BainT(Bainresult[[index]])
-                            BFplot[["data"]] <- .endSaveImage(image)
-                            
-                        })
-                        
-                        BFplot[["status"]] <- "complete"
-                        
-                        BFplots[[i]] <- BFplot
-                        
-                    }
+                    
+                    index <- which(state$BFplotvariables == variable)
+                    
+                    BFplots[[BFind]] <- state$BFplots[[index]]
                     
                     
-                } else { # create a new bayes factor plot
+                } else {
                     
-                    BFplot <- list()
+                    results[["BFplots"]][["collection"]][[BFind]][["status"]] <- "running"
                     
-                    BFplot[["title"]] <- variable
-                    BFplot[["width"]] <- options$plotWidth
-                    BFplot[["height"]] <- options$plotHeight
-                    BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-                    BFplot[["status"]] <- "waiting"
-                    BFplot[["data"]] <- ""
+                    if ( ! .shouldContinue(callback(results)))
+                        return()
                     
-                    BFplotvariable[[i]] <- variable
-                    p <- try(silent= FALSE, expr= { 
+                    plot <- BFplots[[BFind]]
+                    
+                    p <- try(silent= FALSE, expr= {
                         
                         image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-                        Bain::plot.BainT(Bainresult[[i]])
-                        BFplot[["data"]] <- .endSaveImage(image)
-                        
+                        Bain::plot.BainT(Bainresult[[index]])
+                        plot[["data"]] <- .endSaveImage(image)
                     })
                     
-                    BFplot[["status"]] <- "complete"
+                    # if (class(p) == "try-error") {
+                    # 
+                    # 	errorMessageTmp <- .extractErrorMessage(p)
+                    # 	errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
+                    # 	plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+                    # }
                     
-                    BFplots[[i]] <- BFplot
+                    plot[["status"]] <- "complete"
                     
+                    BFplots[[BFind]] <- plot
                 }
+                
+                results[["BFplots"]][["collection"]] <- BFplots
+                
+                BFind <- BFind + 1
+                
+                if ( ! .shouldContinue(callback(results)))
+                    return()
+
             }
+            
+            # if(options$plotPriorAndPosterior){ # if bayes factor plots are wanted
+            #     
+            #     if (!is.null(state) && variable %in% state$options$variables && variable %in% state$Bainvariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE)))) {
+            #         
+            #         # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+            #         # then, if the requested plot already exists, use it
+            #         if (!is.null(state) && variable %in% state$BFplotvariable && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE)))) {
+            #             
+            #             index <- which(state$BFplotvariable == variable)
+            #             
+            #             BFplots[[i]] <- state$BFplots[[index]]
+            #             
+            #             BFplotvariable[[i]] <- state$BFplotvariable[[index]]
+            #             
+            #         } else {
+            #             
+            #             index <- which(state$Bainvariables == variable)
+            #             
+            #             BFplot <- list()
+            #             
+            #             BFplot[["title"]] <- variable
+            #             BFplot[["width"]] <- options$plotWidth
+            #             BFplot[["height"]] <- options$plotHeight
+            #             BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+            #             BFplot[["status"]] <- "waiting"
+            #             BFplot[["data"]] <- ""
+            #             
+            #             BFplotvariable[[i]] <- variable
+            #             
+            #             p <- try(silent= FALSE, expr= {
+            #                 
+            #                 image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+            #                 Bain::plot.BainT(Bainresult[[index]])
+            #                 BFplot[["data"]] <- .endSaveImage(image)
+            #                 
+            #             })
+            #             
+            #             BFplot[["status"]] <- "complete"
+            #             
+            #             BFplots[[i]] <- BFplot
+            #             
+            #         }
+            #         
+            #         
+            #     } else { # create a new bayes factor plot
+            #         
+            #         BFplot <- list()
+            #         
+            #         BFplot[["title"]] <- variable
+            #         BFplot[["width"]] <- options$plotWidth
+            #         BFplot[["height"]] <- options$plotHeight
+            #         BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+            #         BFplot[["status"]] <- "waiting"
+            #         BFplot[["data"]] <- ""
+            #         
+            #         BFplotvariable[[i]] <- variable
+            #         
+            #         p <- try(silent= FALSE, expr= { 
+            #             
+            #             image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+            #             Bain::plot.BainT(Bainresult[[i]])
+            #             BFplot[["data"]] <- .endSaveImage(image)
+            #             
+            #         })
+            #         
+            #         BFplot[["status"]] <- "complete"
+            #         
+            #         BFplots[[i]] <- BFplot
+            #         
+            #     }
+            # }
             
             # if (class(result_test) == "try-error") {
             # 
@@ -728,7 +812,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     } else {
         
         return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes,
-                                                                   plotVariables=plotVariables, descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, BFplots = BFplots, BFplotvariable = BFplotvariable, status=status, plottingError=plottingError,
+                                                                   plotVariables=plotVariables, descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, BFplots = BFplots, BFplotvariables = BFplotvariables, status=status, plottingError=plottingError,
                                                                    BF10post=BF10post, errorFootnotes=errorFootnotes, Bainvariables = Bainvariables, Bainresult = Bainresult), keep=keep))
         
     }
