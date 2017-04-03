@@ -189,7 +189,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 		if (options$plotPriorAndPosterior)
 			results[["BFplots"]] <- list(title=ifelse(length(options[["variables"]]) > 1,
-				"BF Plots", "BF Plot"), collection=BFplots)
+				"Bayes Factors plots", "Bayes Factor plot"), collection=BFplots)
 
 		if (options$descriptivesPlots)
 			results[["descriptivesPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1, "Descriptives Plots", "Descriptives Plot"), collection=descriptivesPlots)

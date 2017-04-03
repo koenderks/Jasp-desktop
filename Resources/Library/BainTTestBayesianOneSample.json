@@ -48,12 +48,12 @@
 			"value": 0.950
 		},
 		{
-			"default": 320,
+            "default": 420,
 			"name": "plotWidth",
 			"type": "Integer"
 		},
 		{
-			"default": 240,
+            "default": 340,
 			"name": "plotHeight",
 			"type": "Integer"
 		},
