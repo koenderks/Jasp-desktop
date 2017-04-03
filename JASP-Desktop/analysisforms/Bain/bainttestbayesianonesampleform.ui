@@ -260,7 +260,7 @@
             <item row="3" column="0">
              <widget class="QRadioButton" name="allTypes">
               <property name="text">
-               <string>All</string>
+               <string>All hypothesis</string>
               </property>
              </widget>
             </item>
@@ -592,7 +592,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Plot</string>
+               <string>Bayes factor comparison</string>
               </property>
              </widget>
             </item>
