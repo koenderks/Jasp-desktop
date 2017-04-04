@@ -541,6 +541,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 variableData <- dataset[[ .v(variable) ]]
                 variableData <- variableData[ ! is.na(variableData) ]
                 
+                # subtract test value from data points
                 variableData <- variableData - options$testValue
                 
                 r <- Bain::Bain_ttestData(variableData, type = type)
