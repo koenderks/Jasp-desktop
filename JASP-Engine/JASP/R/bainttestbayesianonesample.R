@@ -430,11 +430,13 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         
         i <- 1
         
-        errorFootnotes <- character()
+        errorFootnotes <- list()
         
         Bainresult <- list()
         Bainvariables <- list()
         BFind <- 1
+        
+        footnotes <- .newFootnotes()
         
         for (variable in options[["variables"]])
         {
@@ -444,18 +446,41 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 
                 index <- which(state$options$variables == variable)
                 
-                # if (state$errorFootnotes[index] == "no") {
-                #
-                ttest.rows[[i]] <- state$results$ttest$data[[index]]
-                #
-                # } else {
+                 if (state$Bainresult[index] != "error") {
                 
-                # index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
-                # 
-                # errorFootnotes[i] <- state$errorFootnotes[index]
-                # 
-                # ttest.rows[[i]] <- list(Variable=variable, BF=.clean(NaN), pmp=".", .footnotes=list(BF=list(index2)))
-                # }
+                ttest.rows[[i]] <- state$results$ttest$data[[index]]
+                
+                } else {
+                
+                index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
+
+                errorFootnotes[i] <- state$errorFootnotes[index]
+
+                if(options$hypothesis == "notEqualToTestValue"){
+                    result_test <- list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2)))
+                } 
+                if(options$hypothesis == "greaterThanTestValue"){
+                    result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2))) 
+                }
+                if(options$hypothesis == "lessThanTestValue"){
+                    result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2)))  
+                }
+                if(options$hypothesis == "allTypes"){
+                    result_test <-list(Variable=variable, 
+                                       "type[greater]" = "> Test value",
+                                       "BF[greater]"= .clean(NaN), 
+                                       "pmp[greater]" = .clean(NaN),
+                                       "type[less]"= "< Test value",
+                                       "BF[less]" = .clean(NaN), 
+                                       "pmp[less]" = .clean(NaN),
+                                       "type[equal]" = "= Test value",
+                                       "BF[equal]" = "",
+                                       "pmp[equal]" = .clean(NaN),.footnotes = list(BF=list(index2))) 
+                }
+                
+                ttest.rows[[i]] <- result_test
+                
+                }
                 
                 BF10post[i] <- state$BF10post[index]
                 status[i] <- state$status[index]
@@ -464,6 +489,54 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 Bainvariables[[i]] <- state$Bainvariables[[index]]
                 
             } else {
+                
+                # error handling  ############
+                
+                errors <- .hasErrors(dataset=dataset, perform=perform, type=c('observations', 'variance', "infinity"), 
+                                     all.target=variable, observations.amount = "< 1", message = "short")
+                
+                errorMessage <- NULL
+                
+                if (!identical(errors, FALSE)) {
+                    errorMessage <- errors$message
+                }
+                
+                if (!is.null(errorMessage)) {
+                    
+                    ## log the error in a footnote
+                    index <- .addFootnote(footnotes, errorMessage)
+                    row.footnotes <- list(t = list(index))
+                    
+                    if(options$hypothesis == "notEqualToTestValue"){
+                        result_test <- list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes)
+                    } 
+                    if(options$hypothesis == "greaterThanTestValue"){
+                        result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes) 
+                    }
+                    if(options$hypothesis == "lessThanTestValue"){
+                        result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes)  
+                    }
+                    if(options$hypothesis == "allTypes"){
+                        result_test <-list(Variable=variable, 
+                                           "type[greater]" = "> Test value",
+                                           "BF[greater]"= .clean(NaN), 
+                                           "pmp[greater]" = .clean(NaN),
+                                           "type[less]"= "< Test value",
+                                           "BF[less]" = .clean(NaN), 
+                                           "pmp[less]" = .clean(NaN),
+                                           "type[equal]" = "= Test value",
+                                           "BF[equal]" = "",
+                                           "pmp[equal]" = .clean(NaN),.footnotes = row.footnotes) 
+                    }
+                    
+                    
+                    Bainresult[[i]] <- "error"
+                    Bainvariables[[i]] <- variable 
+                    errorFootnotes[[i]] <- errorMessage
+                    
+                } else {
+                
+                ##############################################
                 
                 variableData <- dataset[[ .v(variable) ]]
                 variableData <- variableData[ ! is.na(variableData) ]
@@ -495,6 +568,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     
                 }
                 
+                
                 # Bayes factor transformation
                 
                 # if (bf.type == "BF01")
@@ -509,16 +583,6 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 # 	BF <- .clean(BF)
                 # }
                 
-                
-                
-                
-                # error handling here ############
-                
-                # errorMessage <- "Hoi"
-                # errorFootnotes[i] <- errorMessage
-                # index <- .addFootnote(footnotes, errorMessage)
-                
-                ##############################################
                 
                 if(options$hypothesis == "notEqualToTestValue"){
                     result_test <- list(Variable=variable, BF=BF, pmp = PMP)
@@ -537,9 +601,11 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                                        "type[less]"= "< Test value",
                                        "BF[less]" = BF_less, 
                                        "pmp[less]" = PMP_less,
-                                       "type[equal]" = "!= Test value",
+                                       "type[equal]" = "= Test value",
                                        "BF[equal]" = "",
                                        "pmp[equal]" = PMP_equal) 
+                }
+                
                 }
                 
                 ttest.rows[[i]] <- result_test
@@ -570,12 +636,21 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     
                     index <- which(Bainvariables == variable)
                     
+                    if(Bainresult[[i]] == "error"){
+                        
+                        plot[["data"]] <- ""
+                        plot[["error"]] <- list(error="badData", errorMessage=errorFootnotes[[i]])
+                        
+                    } else {
+                    
                     p <- try(silent= FALSE, expr= {
                         
                         image <- .beginSaveImage(options$plotWidth, options$plotHeight)
                         Bain::plot.BainT(Bainresult[[index]])
                         plot[["data"]] <- .endSaveImage(image)
                     })
+                    
+                    }
                     
                     # if (class(p) == "try-error") {
                     # 
@@ -651,6 +726,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         
         
         ttest[["data"]] <- ttest.rows
+        ttest[["footnotes"]] <- as.list(footnotes)
         ttest[["status"]] <- "complete"
         results[["ttest"]] <- ttest
         
@@ -692,6 +768,13 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     
                     plot <- descriptivesPlots[[descriptInd]]
                     
+                    if(Bainresult[[i]] == "error"){
+                        
+                        plot[["data"]] <- ""
+                        plot[["error"]] <- list(error="badData", errorMessage=errorFootnotes[[i]])
+                        
+                    } else {
+                    
                     p <- try(silent= FALSE, expr= {
                         
                         image <- .beginSaveImage(options$plotWidth, options$plotHeight)
@@ -699,6 +782,8 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                                                               descriptivesPlotsCredibleInterval)
                         plot[["data"]] <- .endSaveImage(image)
                     })
+                    
+                    }
                     
                     # if (class(p) == "try-error") {
                     # 

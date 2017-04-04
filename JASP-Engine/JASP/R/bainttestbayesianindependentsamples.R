@@ -694,7 +694,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						                       "type[less]"= "Group 1 < Group 2",
 						                       "BF[less]" = BF_less, 
 						                       "pmp[less]" = PMP_less,
-						                       "type[equal]" = "Group 1 != Group 2",
+						                       "type[equal]" = "Group 1 = Group 2",
 						                       "BF[equal]" = "",
 						                       "pmp[equal]" = PMP_equal) 
 						}
