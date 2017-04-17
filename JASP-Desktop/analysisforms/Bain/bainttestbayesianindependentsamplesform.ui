@@ -292,14 +292,14 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Group 1 ≠ Group 2</string>
+               <string>Group 1 = Group 2</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
              <widget class="QRadioButton" name="allTypes">
               <property name="text">
-               <string>All hypothesis</string>
+               <string>All hypotheses</string>
               </property>
              </widget>
             </item>
