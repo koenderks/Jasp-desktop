@@ -178,7 +178,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         type = 2
         
         note <- "For all tests, the alternative hypothesis specifies that the mean
-					is greater than "
+					is less than "
         message <- paste0(note, options$testValue, ".")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
@@ -187,7 +187,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         type <- 3
         
         note <- "For all tests, the alternative hypothesis specifies that the mean
-					is less than "
+					is greater than "
         message <- paste0(note, options$testValue, ".")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
@@ -596,10 +596,10 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 }
                 if(options$hypothesis == "allTypes"){
                     result_test <-list(Variable=variable, 
-                                       "type[greater]" = "> Test value",
+                                       "type[greater]" = "< Test value",
                                        "BF[greater]"= BF_greater, 
                                        "pmp[greater]" = PMP_greater,
-                                       "type[less]"= "< Test value",
+                                       "type[less]"= "> Test value",
                                        "BF[less]" = BF_less, 
                                        "pmp[less]" = PMP_less,
                                        "type[equal]" = "= Test value",

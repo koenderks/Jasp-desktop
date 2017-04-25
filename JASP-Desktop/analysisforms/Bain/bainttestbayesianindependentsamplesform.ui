@@ -253,7 +253,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Group 1 &lt; Group 2</string>
+               <string>Group 1 &gt; Group 2</string>
               </property>
              </widget>
             </item>
@@ -266,7 +266,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Group 1 &gt; Group 2</string>
+               <string>Group 1 &lt; Group 2</string>
               </property>
              </widget>
             </item>

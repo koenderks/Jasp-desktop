@@ -227,7 +227,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&gt; Test value</string>
+               <string>&lt; Test value</string>
               </property>
              </widget>
             </item>
@@ -240,7 +240,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&lt; Test value</string>
+               <string>&gt; Test value</string>
               </property>
              </widget>
             </item>
@@ -253,7 +253,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>≠ Test value</string>
+               <string>= Test value</string>
               </property>
              </widget>
             </item>

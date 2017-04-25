@@ -495,12 +495,12 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 	if (options$hypothesis == "groupOneGreater") {
 
-		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is greater than group <em>", g2, "</em>.", sep="")
+		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is less than group <em>", g2, "</em>.", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "groupTwoGreater") {
 
-		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is less than group <em>", g2, "</em>.", sep="")
+		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is greater than group <em>", g2, "</em>.", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 	} else if (options$hypothesis == "allTypes"){
@@ -814,10 +814,10 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						}
 						if(options$hypothesis == "allTypes"){
 						    result_test <-list(Variable=variable, 
-						                       "type[greater]" = "Group 1 > Group 2",
+						                       "type[greater]" = "Group 1 < Group 2",
 						                       "BF[greater]"= BF_greater, 
 						                       "pmp[greater]" = PMP_greater,
-						                       "type[less]"= "Group 1 < Group 2",
+						                       "type[less]"= "Group 1 > Group 2",
 						                       "BF[less]" = BF_less, 
 						                       "pmp[less]" = PMP_less,
 						                       "type[equal]" = "Group 1 = Group 2",
