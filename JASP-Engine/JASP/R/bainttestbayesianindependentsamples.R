@@ -453,8 +453,13 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 	    
 	    fields <- list(
 	        list(name="Variable", type="string", title=""),
-	        list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
-	        list(name="pmp", type="number", format="sf:4;dp:3", title="Posterior probability"))
+	        list(name = "hypothesis[type1]", type = "string", title = "Hypothesis"),
+	        list(name="BF[type1]", type="number", format="sf:4;dp:3", title=bf.title),
+	        list(name="pmp[type1]", type="number", format="sf:4;dp:3", title="Posterior probability"),
+	        list(name = "hypothesis[type2]", type = "string", title = "Hypothesis"),
+	        list(name="BF[type2]", type="number", format="sf:4;dp:3", title=bf.title),
+	        list(name="pmp[type2]", type="number", format="sf:4;dp:3", title="Posterior probability"))
+	    
 	    
 	}
 	
@@ -471,7 +476,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 	        list(name="BF[less]", type="number", format="sf:4;dp:3", title="bf.title"),
 	        list(name="pmp[less]", type="number", format="sf:4;dp:3", title="Posterior probability"),
 	        list(name = "type[equal]", type = "string", title = "Hypothesis"),
-	        list(name = "BF[equal]", type = "string", title = bf.title),
+	        list(name = "BF[equal]", type = "string", title = bf.title,format="sf:4;dp:3"),
 	        list(name="pmp[equal]", type="number", format="sf:4;dp:3", title="Posterior probability"))
 	    
 	}
@@ -566,25 +571,29 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 					index2 <- .addFootnote(footnotes, state$errorFootnotes[[index]])
 					
 					if(options$hypothesis == "groupsNotEqual"){
-					    result_test <- list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes=list(BF=list(index2)))
+					    result_test <- list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2","BF[type1]"=.clean(NaN), "pmp[type1]" = .clean(NaN),
+					                        "hypothesis[type2]" = "mu != mu2", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					} 
 					if(options$hypothesis == "groupTwoGreater"){
-					    result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes=list(BF=list(index2))) 
+					    result_test <-list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2","BF[type1]"= .clean(NaN), "pmp[type1]" = .clean(NaN),
+					                       "hypothesis[type2]" = "mu1 < mu2", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					}
 					if(options$hypothesis == "groupOneGreater"){
-					    result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes=list(BF=list(index2)))  
+					    result_test <-list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
+					    "hypothesis[type2]" = "mu1 > mu2 ", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					}
 					if(options$hypothesis == "allTypes"){
 					    result_test <-list(Variable=variable, 
-					                       "type[greater]" = "Group 1 > Group 2",
+					                       "type[greater]" = "mu1 = mu2 vs mu1 > mu2",
 					                       "BF[greater]"= .clean(NaN), 
 					                       "pmp[greater]" = .clean(NaN),
-					                       "type[less]"= "Group 1 < Group 2",
+					                       "type[less]"= "mu1 = mu2 vs mu1 < mu2",
 					                       "BF[less]" = .clean(NaN), 
 					                       "pmp[less]" = .clean(NaN),
-					                       "type[equal]" = "Group 1 = Group 2",
-					                       "BF[equal]" = "",
-					                       "pmp[equal]" = .clean(NaN),.footnotes=list(BF=list(index2))) 
+					                       "type[equal]" = "mu1 > mu2 vs mu1 < mu2",
+					                       "BF[equal]" = .clean(NaN),
+					                       "pmp[equal]" = .clean(NaN),
+					                       .footnotes = list(BF=list(index2))) 
 					}
 
 					ttest.rows[[length(ttest.rows)+1]] <- result_test
@@ -634,11 +643,11 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 				
 				if (options$hypothesis == "groupOneGreater") {
 				    
-				    type <- 3 
+				    type <- 2 
 				    
 				} else if (options$hypothesis == "groupTwoGreater") {
 				    
-				    type <- 2
+				    type <- 3
 				    
 				} else if (options$hypothesis == "allTypes"){
 				    
@@ -697,25 +706,29 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 					    errorFootnotes[i] <- state$errorFootnotes[index]
 					    
 					    if(options$hypothesis == "groupsNotEqual"){
-					        result_test <- list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2)))
+					        result_test <- list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2","BF[type1]"=.clean(NaN), "pmp[type1]" = .clean(NaN),
+					                            "hypothesis[type2]" = "mu != mu2", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					    } 
 					    if(options$hypothesis == "groupTwoGreater"){
-					        result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2))) 
+					        result_test <-list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2","BF[type1]"= .clean(NaN), "pmp[type1]" = .clean(NaN),
+					                           "hypothesis[type2]" = "mu1 < mu2", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					    }
 					    if(options$hypothesis == "groupOneGreater"){
-					        result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2)))  
+					        result_test <-list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
+					        "hypothesis[type2]" = "mu1 > mu2 ", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					    }
 					    if(options$hypothesis == "allTypes"){
 					        result_test <-list(Variable=variable, 
-					                           "type[greater]" = "> Test value",
+					                           "type[greater]" = "mu1 = mu2 vs mu1 > mu2",
 					                           "BF[greater]"= .clean(NaN), 
 					                           "pmp[greater]" = .clean(NaN),
-					                           "type[less]"= "< Test value",
+					                           "type[less]"= "mu1 = mu2 vs mu1 < mu2",
 					                           "BF[less]" = .clean(NaN), 
 					                           "pmp[less]" = .clean(NaN),
-					                           "type[equal]" = "= Test value",
-					                           "BF[equal]" = "",
-					                           "pmp[equal]" = .clean(NaN),.footnotes = list(BF=list(index2))) 
+					                           "type[equal]" = "mu1 > mu2 vs mu1 < mu2",
+					                           "BF[equal]" = .clean(NaN),
+					                           "pmp[equal]" = .clean(NaN),
+					                           .footnotes = list(BF=list(index2))) 
 					    }
 					    
 					    ttest.rows[[i]] <- result_test 
@@ -747,25 +760,29 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 				        row.footnotes <- list(t = list(index))
 				        
 				        if(options$hypothesis == "groupsNotEqual"){
-				            result_test <- list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes)
+				            result_test <- list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2","BF[type1]"=.clean(NaN), "pmp[type1]" = .clean(NaN),
+				                                "hypothesis[type2]" = "mu != mu2", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = row.footnotes)
 				        } 
 				        if(options$hypothesis == "groupTwoGreater"){
-				            result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes) 
+				            result_test <-list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2","BF[type1]"= .clean(NaN), "pmp[type1]" = .clean(NaN),
+				                               "hypothesis[type2]" = "mu1 < mu2", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = row.footnotes)
 				        }
 				        if(options$hypothesis == "groupOneGreater"){
-				            result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes)  
+				            result_test <-list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
+				            "hypothesis[type2]" = "mu1 > mu2 ", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = row.footnotes)
 				        }
 				        if(options$hypothesis == "allTypes"){
 				            result_test <-list(Variable=variable, 
-				                               "type[greater]" = "Group 1 > Group 2",
+				                               "type[greater]" = "mu1 = mu2 vs mu1 > mu2",
 				                               "BF[greater]"= .clean(NaN), 
 				                               "pmp[greater]" = .clean(NaN),
-				                               "type[less]"= "Group 1 < Group 2",
+				                               "type[less]"= "mu1 = mu2 vs mu1 < mu2",
 				                               "BF[less]" = .clean(NaN), 
 				                               "pmp[less]" = .clean(NaN),
-				                               "type[equal]" = "Group 1 = Group 2",
-				                               "BF[equal]" = "",
-				                               "pmp[equal]" = .clean(NaN),.footnotes = row.footnotes) 
+				                               "type[equal]" = "mu1 > mu2 vs mu1 < mu2",
+				                               "BF[equal]" = .clean(NaN),
+				                               "pmp[equal]" = .clean(NaN),
+				                               .footnotes = row.footnotes) 
 				        }
 				        
 				        
@@ -782,47 +799,53 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						plotres[[i]] <- r 
 						
 						if(type == 1){
-						    BF <- r$BF
-						    PMP <- r$PMP
+						    BF_0u <- r$BF_0u
+						    PMP_u <- r$PMP_u
+						    PMP_0 <- r$PMP_0
 						} 
 						if(type == 2){
-						    BF_greater <- r$BF_greater
-						    PMP_greater <- r$PMP
+						    BF_01 <- r$BF_01
+						    PMP_1 <- r$PMP_1
+						    PMP_0 <- r$PMP_0
 						}
 						if(type == 3){
-						    BF_less <- r$BF_less
-						    PMP_less <- r$PMP
+						    BF_01 <- r$BF_01
+						    PMP_0 <- r$PMP_0
+						    PMP_1 <- r$PMP_1
 						}
 						if(type == 4){
-						    BF_greater <- r$BF_greater
-						    BF_less <- r$BF_less
-						    PMP_greater <- r$PMP_greater
-						    PMP_less <- r$PMP_less
-						    PMP_equal <- r$PMP_equal
-						    
+						    BF_01 <- r$BF_01
+						    BF_02 <- r$BF_02
+						    BF_12 <- r$BF_12
+						    PMP_0 <- r$PMP_0
+						    PMP_1 <- r$PMP_1
+						    PMP_2 <- r$PMP_2
 						}
 						
 						
 						if(options$hypothesis == "groupsNotEqual"){
-						    result_test <- list(Variable=variable, BF=BF, pmp = PMP)
+						    result_test <- list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=BF_0u, "pmp[type1]" = PMP_0,
+						    "hypothesis[type2]" = "Not equal", "BF[type2]" = "", "pmp[type2]" = PMP_u)
 						} 
 						if(options$hypothesis == "groupTwoGreater"){
-						    result_test <-list(Variable=variable, BF=BF_greater, pmp = PMP_greater) 
+						    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"= BF_01, "pmp[type1]" = PMP_0,
+						                       "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
 						}
 						if(options$hypothesis == "groupOneGreater"){
-						    result_test <-list(Variable=variable, BF=BF_less, pmp = PMP_less)  
+						    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"= BF_01, "pmp[type1]" = PMP_0,
+						                       "hypothesis[type2]" = "Bigger", "BF[type2]" = "", "pmp[type2]" = PMP_1)
 						}
 						if(options$hypothesis == "allTypes"){
 						    result_test <-list(Variable=variable, 
-						                       "type[greater]" = "Group 1 < Group 2",
-						                       "BF[greater]"= BF_greater, 
-						                       "pmp[greater]" = PMP_greater,
-						                       "type[less]"= "Group 1 > Group 2",
-						                       "BF[less]" = BF_less, 
-						                       "pmp[less]" = PMP_less,
-						                       "type[equal]" = "Group 1 = Group 2",
-						                       "BF[equal]" = "",
-						                       "pmp[equal]" = PMP_equal) 
+						                       "type[greater]" = "Equal vs. Bigger",
+						                       "BF[greater]"= BF_01, 
+						                       "pmp[greater]" = PMP_0,
+						                       "type[less]"= "Equal vs. Smaller",
+						                       "BF[less]" = BF_02, 
+						                       "pmp[less]" = PMP_1,
+						                       "type[equal]" = "Bigger vs. Smaller",
+						                       "BF[equal]" = BF_12,
+						                       "pmp[equal]" = PMP_2) 
 						}
 
 						# if (options$bayesFactorType == "BF01")

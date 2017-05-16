@@ -227,7 +227,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&lt; Test value</string>
+               <string>Equal vs. Bigger</string>
               </property>
              </widget>
             </item>
@@ -240,7 +240,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&gt; Test value</string>
+               <string>Equal vs. Smaller</string>
               </property>
              </widget>
             </item>
@@ -253,14 +253,14 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>= Test value</string>
+               <string>Equal vs. Not equal</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
              <widget class="QRadioButton" name="allTypes">
               <property name="text">
-               <string>All hypothesis</string>
+               <string>Equal vs. Bigger vs. Smaller</string>
               </property>
              </widget>
             </item>
@@ -645,11 +645,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -670,6 +665,11 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

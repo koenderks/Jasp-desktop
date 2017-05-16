@@ -132,8 +132,12 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         
         fields <- list(
             list(name="Variable", type="string", title=""),
-            list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
-            list(name="pmp", type="number", format="sf:4;dp:3", title="Posterior probability"))
+            list(name = "hypothesis[type1]", type = "string", title = "Hypothesis"),
+            list(name="BF[type1]", type="number", format="sf:4;dp:3", title=bf.title),
+            list(name="pmp[type1]", type="number", format="sf:4;dp:3", title="Posterior probability"),
+            list(name = "hypothesis[type2]", type = "string", title = "Hypothesis"),
+            list(name="BF[type2]", type="number", format="sf:4;dp:3", title=bf.title),
+            list(name="pmp[type2]", type="number", format="sf:4;dp:3", title="Posterior probability"))
         
     }
     
@@ -150,7 +154,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
             list(name="BF[less]", type="number", format="sf:4;dp:3", title="bf.title"),
             list(name="pmp[less]", type="number", format="sf:4;dp:3", title="Posterior probability"),
             list(name = "type[equal]", type = "string", title = "Hypothesis"),
-            list(name = "BF[equal]", type = "string", title = bf.title),
+            list(name = "BF[equal]", type = "string", title = bf.title,format="sf:4;dp:3"),
             list(name="pmp[equal]", type="number", format="sf:4;dp:3", title="Posterior probability"))
         
     }
@@ -457,25 +461,29 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 errorFootnotes[i] <- state$errorFootnotes[index]
 
                 if(options$hypothesis == "notEqualToTestValue"){
-                    result_test <- list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2)))
+                    result_test <- list(Variable=variable, "hypothesis[type1]" = "mu = test value","BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
+                                        "hypothesis[type2]" = "mu != test value", "BF[type]" = .clear(NaN), "pmp[type2]" = .clear(NaN),.footnotes = list(BF=list(index2)))
                 } 
                 if(options$hypothesis == "greaterThanTestValue"){
-                    result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2))) 
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "mu = test value","BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
+                                       "hypothesis[type2]" = "mu > test value", "BF[type2]" = "", "pmp[type2]" = .clear(NaN),.footnotes = list(BF=list(index2)))
                 }
                 if(options$hypothesis == "lessThanTestValue"){
-                    result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = list(BF=list(index2)))  
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "mu = test value", "BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
+                                       "hypothesis[type2]" = "mu < test value", "BF[type2]" = .clear(NaN), "pmp[type2]" = .clear(NaN),.footnotes = list(BF=list(index2)))
                 }
                 if(options$hypothesis == "allTypes"){
                     result_test <-list(Variable=variable, 
-                                       "type[greater]" = "> Test value",
-                                       "BF[greater]"= .clean(NaN), 
-                                       "pmp[greater]" = .clean(NaN),
-                                       "type[less]"= "< Test value",
-                                       "BF[less]" = .clean(NaN), 
-                                       "pmp[less]" = .clean(NaN),
-                                       "type[equal]" = "= Test value",
-                                       "BF[equal]" = "",
-                                       "pmp[equal]" = .clean(NaN),.footnotes = list(BF=list(index2))) 
+                                       "type[greater]" = "mu = Test value vs mu > test value",
+                                       "BF[greater]"= .clear(NaN), 
+                                       "pmp[greater]" = .clear(NaN),
+                                       "type[less]"= "mu > Test value vs mu < test value",
+                                       "BF[less]" = .clear(NaN), 
+                                       "pmp[less]" = .clear(NaN),
+                                       "type[equal]" = "mu > test value vs mu < test value",
+                                       "BF[equal]" = .clear(NaN),
+                                       "pmp[equal]" = .clear(NaN),
+                                       .footnotes = list(BF=list(index2))) 
                 }
                 
                 ttest.rows[[i]] <- result_test
@@ -508,29 +516,31 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     row.footnotes <- list(t = list(index))
                     
                     if(options$hypothesis == "notEqualToTestValue"){
-                        result_test <- list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes)
+                        result_test <- list(Variable=variable, "hypothesis[type1]" = "mu = test value","BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
+                                            "hypothesis[type2]" = "mu != test value", "BF[type]" = .clear(NaN), "pmp[type2]" = .clear(NaN),.footnotes = row.footnotes)
                     } 
                     if(options$hypothesis == "greaterThanTestValue"){
-                        result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes) 
+                        result_test <-list(Variable=variable, "hypothesis[type1]" = "mu = test value","BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
+                                           "hypothesis[type2]" = "mu > test value", "BF[type2]" = "", "pmp[type2]" = .clear(NaN),.footnotes = row.footnotes)
                     }
                     if(options$hypothesis == "lessThanTestValue"){
-                        result_test <-list(Variable=variable, BF=.clean(NaN), pmp = .clean(NaN),.footnotes = row.footnotes)  
+                        result_test <-list(Variable=variable, "hypothesis[type1]" = "mu = test value", "BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
+                                           "hypothesis[type2]" = "mu < test value", "BF[type2]" = .clear(NaN), "pmp[type2]" = .clear(NaN),.footnotes = row.footnotes)
                     }
                     if(options$hypothesis == "allTypes"){
                         result_test <-list(Variable=variable, 
-                                           "type[greater]" = "> Test value",
-                                           "BF[greater]"= .clean(NaN), 
-                                           "pmp[greater]" = .clean(NaN),
-                                           "type[less]"= "< Test value",
-                                           "BF[less]" = .clean(NaN), 
-                                           "pmp[less]" = .clean(NaN),
-                                           "type[equal]" = "= Test value",
-                                           "BF[equal]" = "",
-                                           "pmp[equal]" = .clean(NaN),.footnotes = row.footnotes) 
+                                           "type[greater]" = "mu = Test value vs mu > test value",
+                                           "BF[greater]"= .clear(NaN), 
+                                           "pmp[greater]" = .clear(NaN),
+                                           "type[less]"= "mu > Test value vs mu < test value",
+                                           "BF[less]" = .clear(NaN), 
+                                           "pmp[less]" = .clear(NaN),
+                                           "type[equal]" = "mu > test value vs mu < test value",
+                                           "BF[equal]" = .clear(NaN),
+                                           "pmp[equal]" = .clear(NaN),
+                                           .footnotes = row.footnotes) 
                     }
-                    
-                    
-                    Bainresult[[i]] <- "error"
+                    result[[i]] <- "error"
                     Bainvariables[[i]] <- variable 
                     errorFootnotes[[i]] <- errorMessage
                     
@@ -549,24 +559,27 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 Bainvariables[[i]] <- variable
                 
                 if(type == 1){
-                    BF <- r$BF
-                    PMP <- r$PMP
+                    BF_0u <- r$BF_0u
+                    PMP_u <- r$PMP_u
+                    PMP_0 <- r$PMP_0
                 } 
                 if(type == 2){
-                    BF_greater <- r$BF_greater
-                    PMP_greater <- r$PMP
+                    BF_01 <- r$BF_01
+                    PMP_1 <- r$PMP_1
+                    PMP_0 <- r$PMP_0
                 }
                 if(type == 3){
-                    BF_less <- r$BF_less
-                    PMP_less <- r$PMP
+                    BF_01 <- r$BF_01
+                    PMP_0 <- r$PMP_0
+                    PMP_1 <- r$PMP_1
                 }
                 if(type == 4){
-                    BF_greater <- r$BF_greater
-                    BF_less <- r$BF_less
-                    PMP_greater <- r$PMP_greater
-                    PMP_less <- r$PMP_less
-                    PMP_equal <- r$PMP_equal
-                    
+                    BF_01 <- r$BF_01
+                    BF_02 <- r$BF_02
+                    BF_12 <- r$BF_12
+                    PMP_0 <- r$PMP_0
+                    PMP_1 <- r$PMP_1
+                    PMP_2 <- r$PMP_2
                 }
                 
                 
@@ -586,25 +599,28 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 
                 
                 if(options$hypothesis == "notEqualToTestValue"){
-                    result_test <- list(Variable=variable, BF=BF, pmp = PMP)
+                    result_test <- list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=BF_0u, "pmp[type1]" = PMP_0,
+                                        "hypothesis[type2]" = "Not equal", "BF[type]" = "", "pmp[type2]" = PMP_u)
                 } 
                 if(options$hypothesis == "greaterThanTestValue"){
-                    result_test <-list(Variable=variable, BF=BF_greater, pmp = PMP_greater) 
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
+                                      "hypothesis[type2]" = "Bigger", "BF[type2]" = "", "pmp[type2]" = PMP_1)
                 }
                 if(options$hypothesis == "lessThanTestValue"){
-                    result_test <-list(Variable=variable, BF=BF_less, pmp = PMP_less)  
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
+                                            "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
                 }
                 if(options$hypothesis == "allTypes"){
                     result_test <-list(Variable=variable, 
-                                       "type[greater]" = "< Test value",
-                                       "BF[greater]"= BF_greater, 
-                                       "pmp[greater]" = PMP_greater,
-                                       "type[less]"= "> Test value",
-                                       "BF[less]" = BF_less, 
-                                       "pmp[less]" = PMP_less,
-                                       "type[equal]" = "= Test value",
-                                       "BF[equal]" = "",
-                                       "pmp[equal]" = PMP_equal) 
+                                       "type[greater]" = "Equal vs. Bigger",
+                                       "BF[greater]"= BF_01, 
+                                       "pmp[greater]" = PMP_0,
+                                       "type[less]"= "Equal vs. Smaller",
+                                       "BF[less]" = BF_02, 
+                                       "pmp[less]" = PMP_1,
+                                       "type[equal]" = "Bigger vs. Smaller",
+                                       "BF[equal]" = BF_12,
+                                       "pmp[equal]" = PMP_2) 
                 }
                 
                 }
