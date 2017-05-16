@@ -154,7 +154,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
             list(name="BF[less]", type="number", format="sf:4;dp:3", title="bf.title"),
             list(name="pmp[less]", type="number", format="sf:4;dp:3", title="Posterior probability"),
             list(name = "type[equal]", type = "string", title = "Hypothesis"),
-            list(name = "BF[equal]", type = "string", title = bf.title,format="sf:4;dp:3"),
+            list(name = "BF[equal]", type = "number", title = bf.title,format="sf:4;dp:3"),
             list(name="pmp[equal]", type="number", format="sf:4;dp:3", title="Posterior probability"))
         
     }
@@ -179,10 +179,10 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     
     if (options$hypothesis == "greaterThanTestValue") {
         
-        type = 2
+        type <- 2
         
         note <- "For all tests, the alternative hypothesis specifies that the mean
-					is less than "
+					is greater than "
         message <- paste0(note, options$testValue, ".")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
@@ -191,16 +191,15 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         type <- 3
         
         note <- "For all tests, the alternative hypothesis specifies that the mean
-					is greater than "
+					is smaller than "
         message <- paste0(note, options$testValue, ".")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
     } else if (options$hypothesis == "allTypes"){
         
-        note <- "For all tests, all three hypothesis are tested against test value "
+        note <- "For all tests, all three hypothesis are tested with test value "
         message <- paste0(note, options$testValue, ".")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-        
         
     } 
     
@@ -339,6 +338,9 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         i <- i + 1
     }
     
+    if ( ! .shouldContinue(callback(results)))
+        return()
+    
     ttest[["data"]] <- ttest.rows
     ttest[["footnotes"]] <- as.list(footnotes)
     results[["ttest"]] <- ttest
@@ -440,7 +442,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         Bainvariables <- list()
         BFind <- 1
         
-        footnotes <- .newFootnotes()
+        footnotes2 <- .newFootnotes()
         
         for (variable in options[["variables"]])
         {
@@ -456,7 +458,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 
                 } else {
                 
-                index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
+                index2 <- .addFootnote(footnotes2, state$errorFootnotes[index])
 
                 errorFootnotes[i] <- state$errorFootnotes[index]
 
@@ -512,7 +514,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 if (!is.null(errorMessage)) {
                     
                     ## log the error in a footnote
-                    index <- .addFootnote(footnotes, errorMessage)
+                    index <- .addFootnote(footnotes2, errorMessage)
                     row.footnotes <- list(t = list(index))
                     
                     if(options$hypothesis == "notEqualToTestValue"){
@@ -599,28 +601,28 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 
                 
                 if(options$hypothesis == "notEqualToTestValue"){
-                    result_test <- list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=BF_0u, "pmp[type1]" = PMP_0,
+                    result_test <- list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=.clean(BF_0u), "pmp[type1]" = .clean(PMP_0),
                                         "hypothesis[type2]" = "Not equal", "BF[type]" = "", "pmp[type2]" = PMP_u)
                 } 
                 if(options$hypothesis == "greaterThanTestValue"){
-                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
-                                      "hypothesis[type2]" = "Bigger", "BF[type2]" = "", "pmp[type2]" = PMP_1)
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=.clean(BF_01), "pmp[type1]" = .clean(PMP_0),
+                                      "hypothesis[type2]" = "Bigger", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_1))
                 }
                 if(options$hypothesis == "lessThanTestValue"){
-                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
-                                            "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"=.clean(BF_01), "pmp[type1]" = .clean(PMP_0),
+                                            "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_1))
                 }
                 if(options$hypothesis == "allTypes"){
                     result_test <-list(Variable=variable, 
                                        "type[greater]" = "Equal vs. Bigger",
-                                       "BF[greater]"= BF_01, 
-                                       "pmp[greater]" = PMP_0,
+                                       "BF[greater]"= .clean(BF_01), 
+                                       "pmp[greater]" = .clean(PMP_0),
                                        "type[less]"= "Equal vs. Smaller",
-                                       "BF[less]" = BF_02, 
-                                       "pmp[less]" = PMP_1,
+                                       "BF[less]" = .clean(BF_02), 
+                                       "pmp[less]" = .clean(PMP_1),
                                        "type[equal]" = "Bigger vs. Smaller",
-                                       "BF[equal]" = BF_12,
-                                       "pmp[equal]" = PMP_2) 
+                                       "BF[equal]" = .clean(BF_12),
+                                       "pmp[equal]" = .clean(PMP_2)) 
                 }
                 
                 }
@@ -764,10 +766,8 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
             
             if (options$descriptivesPlots) {
                 
-                
                 if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$testValue == FALSE && diff$
                                                                                                                                                                  descriptivesPlotsCredibleInterval == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && options$descriptivesPlots) {
-                    
                     # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
                     # then, if the requested plot already exists, use it
                     
@@ -795,8 +795,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     p <- try(silent= FALSE, expr= {
                         
                         image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-                        .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$
-                                                              descriptivesPlotsCredibleInterval)
+                        .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
                         plot[["data"]] <- .endSaveImage(image)
                     })
                     

@@ -65,7 +65,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 
 	ttest[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225-237.")
 
 	bf.type <- options$bayesFactorType
 
@@ -74,15 +74,15 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 		BFH1H0 <- TRUE
 
 		if (options$hypothesis == "groupsNotEqual") {
-			bf.title <- "BF\u2081\u2080"
+			bf.title <- "BF\u2080\u2081"
 		}
 		if (options$hypothesis == "groupOneGreater") {
-			bf.title <- "BF\u208A\u2080"
+			bf.title <- "BF\u2080\u2081"
 		}
 		if (options$hypothesis == "groupTwoGreater") {
-			bf.title <- "BF\u208B\u2080"
+			bf.title <- "BF\u2080\u2081"
 		} else {
-		    bf.title <- "BF\u2081\u2080" 
+		    bf.title <- "BF\u2080\u2081"
 		}
 
 	} else if (bf.type == "LogBF10") {
@@ -97,6 +97,8 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 		}
 		if (options$hypothesis == "groupTwoGreater") {
 			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+		} else {
+		    bf.title <- "BF\u2081\u2080" 
 		}
 
 	} else if (bf.type == "BF01") {
@@ -111,17 +113,29 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 		}
 		if (options$hypothesis == "groupTwoGreater") {
 			bf.title <- "BF\u2080\u208B"
+		} else {
+		    bf.title <- "BF\u2081\u2080" 
 		}
 	}
+	
+	footnotes <- .newFootnotes()
 
 	if (options$hypothesis == "groupsNotEqual") {
 		type <- 1
+		note <- "For all tests, the alternative hypothesis specifies that the means of the measurements are not equal."
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
 	} else if (options$hypothesis == "groupOneGreater") {
 	    type <- 2
+	    note <- "For all tests, the alternative hypothesis specifies that the mean of variable 1 is bigger than that of variable 2."
+	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
 	} else if (options$hypothesis == "groupTwoGreater") {
 		type <- 3
+		note <- "For all tests, the alternative hypothesis specifies that the mean of variable 1 is smaller than that of variable 2."
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
 	} else if (options$hypothesis == "allTypes"){
 	    type <- 4
+	    note <- "For all pairs, all three hypotheses are tested."
+	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
 	}
 
 	if (options$hypothesis == "groupsNotEqual" | 
@@ -154,7 +168,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 	        list(name="BF[less]", type="number", format="sf:4;dp:3", title="bf.title"),
 	        list(name="pmp[less]", type="number", format="sf:4;dp:3", title="Posterior probability"),
 	        list(name = "type[equal]", type = "string", title = "Hypothesis"),
-	        list(name = "BF[equal]", type = "string", format="sf:4;dp:3", title = bf.title),
+	        list(name = "BF[equal]", type = "number", format="sf:4;dp:3", title = bf.title),
 	        list(name="pmp[equal]", type="number", format="sf:4;dp:3", title="Posterior probability"))
 	    
 	}
@@ -170,7 +184,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 	descriptPlotPairs <- list()
 	tablePairs <- list()
 	errorFootnotes <- rep("no", length(options$pairs))
-	Bainobject <- list()
 
 	state <- .retrieveState()
 
@@ -185,7 +198,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 	if (options$descriptives || options$descriptivesPlots)
 		results[["descriptives"]] <- list(title="Descriptives")
 
-	footnotes <- .newFootnotes()
+	footnotes2 <- .newFootnotes()
 
 	i <- 1
 	
@@ -341,7 +354,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 
 					} else {
 
-						index2 <- .addFootnote(footnotes, state$errorFootnotes[stateIndex])
+						index2 <- .addFootnote(footnotes2, state$errorFootnotes[stateIndex])
 
 						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
 
@@ -417,7 +430,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 
 					} else {
 
-						index2 <- .addFootnote(footnotes, state$errorFootnotes[stateIndex])
+						index2 <- .addFootnote(footnotes2, state$errorFootnotes[stateIndex])
 
 						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
 
@@ -439,7 +452,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 						c2 <- subDataSet[[ .v(pair[[2]]) ]]
 
     					r <- Bain::Bain_ttestData(c1, c2, paired = TRUE,type = type)
-    					Bainobject[[i]] <- r
 
     					if(type == 1){
     					    BF_0u <- r$BF_0u
@@ -498,6 +510,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 		ttest.rows[[length(ttest.rows)+1]] <- result_test
 
 	}
+	
 
 	if (length(ttest.rows) == 0){
 	    if(options$hypothesis == "groupsNotEqual"){
@@ -809,7 +822,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 	} else {
 
 		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotPairs=plotPairs,
-		descriptPlotPairs=descriptPlotPairs, Bainobject = Bainobject, descriptivesPlots=descriptivesPlots, BF10post=BF10post, tablePairs=tablePairs,
+		descriptPlotPairs=descriptPlotPairs, descriptivesPlots=descriptivesPlots, BF10post=BF10post, tablePairs=tablePairs,
 		errorFootnotes=errorFootnotes), keep=keep))
 	}
 }
