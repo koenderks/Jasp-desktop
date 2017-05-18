@@ -209,7 +209,17 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
             
             if (!is.null(state) && currentPair %in% state$descriptPlotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE &&
                                                                                                                                                             diff$plotHeight == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
+ 
+                # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+                # then, if the requested plot already exists, use it
                 
+                index <- which(state$descriptPlotPairs == currentPair)
+                
+                descriptivesPlots[[length(descriptivesPlots)+1]] <- state$descriptivesPlots[[index]]
+                
+                
+            } else if (!is.null(state) && currentPair %in% state$descriptPlotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE &&
+                                                                                                                                                                               diff$plotHeight == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
                 
                 # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
                 # then, if the requested plot already exists, use it
@@ -224,9 +234,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                 descriptivesPlot <- list()
                 
                 descriptivesPlot[["title"]] <- currentPair
-                # descriptivesPlot[["width"]] <- options$plotWidth
-                # descriptivesPlot[["height"]] <- options$plotHeight
-                #descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
                 descriptivesPlot[["status"]] <- "waiting"
                 descriptivesPlot[["data"]] <- ""
                 
@@ -677,7 +684,7 @@ if (perform == "run" && length(options$pairs) > 0 && (options$plotPriorAndPoster
         
         sequentialIsViable <- TRUE
         
-        if (perform == "run" && status$unplotable == FALSE && p2 != "...") {
+        if (perform == "run" && status$unplotable == FALSE && p2 != "..." && p1 != "...") {
             
             subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
             subDataSet <- na.omit(subDataSet)
