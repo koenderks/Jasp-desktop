@@ -291,9 +291,9 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 descriptivesPlot <- list()
                 
                 descriptivesPlot[["title"]] <- variable
-                descriptivesPlot[["width"]] <- options$plotWidth
-                descriptivesPlot[["height"]] <- options$plotHeight
-                descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+                # descriptivesPlot[["width"]] <- options$plotWidth
+                # descriptivesPlot[["height"]] <- options$plotHeight
+                # descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
                 descriptivesPlot[["status"]] <- "waiting"
                 descriptivesPlot[["data"]] <- ""
                 
@@ -322,9 +322,9 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 BFplot <- list()
                 
                 BFplot[["title"]] <- variable
-                BFplot[["width"]] <- options$plotWidth
-                BFplot[["height"]] <- options$plotHeight
-                BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+                # BFplot[["width"]] <- options$plotWidth
+                # BFplot[["height"]] <- options$plotHeight
+                # BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
                 BFplot[["status"]] <- "waiting"
                 BFplot[["data"]] <- ""
                 
@@ -513,7 +513,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 
                 if (!is.null(errorMessage)) {
                     
-                    ## log the error in a footnote
+                    ## add footnote of error #### 
                     index <- .addFootnote(footnotes2, errorMessage)
                     row.footnotes <- list(t = list(index))
                     
@@ -564,18 +564,15 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     BF_0u <- r$BF_0u
                     PMP_u <- r$PMP_u
                     PMP_0 <- r$PMP_0
-                } 
-                if(type == 2){
+                } else if(type == 2){
                     BF_01 <- r$BF_01
                     PMP_1 <- r$PMP_1
                     PMP_0 <- r$PMP_0
-                }
-                if(type == 3){
+                } else if(type == 3){
                     BF_01 <- r$BF_01
                     PMP_0 <- r$PMP_0
                     PMP_1 <- r$PMP_1
-                }
-                if(type == 4){
+                } else if (type == 4) {
                     BF_01 <- r$BF_01
                     BF_02 <- r$BF_02
                     BF_12 <- r$BF_12
@@ -585,7 +582,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 }
                 
                 
-                # Bayes factor transformation
+                # Bayes factor transformation ####
                 
                 # if (bf.type == "BF01")
                 # 	bf.raw <- 1 / bf.raw
@@ -603,16 +600,13 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 if(options$hypothesis == "notEqualToTestValue"){
                     result_test <- list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=.clean(BF_0u), "pmp[type1]" = .clean(PMP_0),
                                         "hypothesis[type2]" = "Not equal", "BF[type]" = "", "pmp[type2]" = PMP_u)
-                } 
-                if(options$hypothesis == "greaterThanTestValue"){
+                } else if(options$hypothesis == "greaterThanTestValue"){
                     result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal","BF[type1]"=.clean(BF_01), "pmp[type1]" = .clean(PMP_0),
                                       "hypothesis[type2]" = "Bigger", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_1))
-                }
-                if(options$hypothesis == "lessThanTestValue"){
+                } else if(options$hypothesis == "lessThanTestValue"){
                     result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"=.clean(BF_01), "pmp[type1]" = .clean(PMP_0),
                                             "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_1))
-                }
-                if(options$hypothesis == "allTypes"){
+                } else if (options$hypothesis == "allTypes"){
                     result_test <-list(Variable=variable, 
                                        "type[greater]" = "Equal vs. Bigger",
                                        "BF[greater]"= .clean(BF_01), 
@@ -667,7 +661,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                         .plotFunc <- function() {
                             Bain::plot.BainT(Bainresult[[index]])
                         }
-                        content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = .plotFunc, obj = TRUE)
+                        content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = .plotFunc)
                         plot[["convertible"]] <- TRUE
                         plot[["obj"]] <- content[["obj"]]
                         plot[["data"]] <- content[["png"]]
@@ -802,7 +796,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                         .plotFunc2 <- function() {
                             .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
                         }
-                        content2 <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = .plotFunc2, obj = TRUE)
+                        content2 <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = .plotFunc2)
                         plot[["convertible"]] <- TRUE
                         plot[["obj"]] <- content2[["obj"]]
                         plot[["data"]] <- content2[["png"]]
@@ -841,8 +835,15 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     
     # keep <- c(keep,lapply(plots.ttest, function(x) x$data))
     
-    keep <- c(keep,lapply(BFplots, function(x) x$data))
-    keep <- c(keep, lapply(descriptivesPlots, function(x) x$data))
+    for(plot in BFplots){
+        keep <- c(keep, plot$data)
+    }
+    for(plot in descriptivesPlots){
+        keep <- c(keep, plot$data)
+    }
+    
+    # keep <- c(keep,lapply(BFplots, function(x) x$data))
+    # keep <- c(keep, lapply(descriptivesPlots, function(x) x$data))
     
     if (perform == "init") {
         
