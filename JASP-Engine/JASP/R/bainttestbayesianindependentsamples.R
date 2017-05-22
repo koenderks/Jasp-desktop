@@ -254,10 +254,9 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 						p <- try(silent= FALSE, expr= {
 						    
-						    .plotFunc <- function() {
-						        .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-						        }
-						    content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = .plotFunc, obj = TRUE)
+						    figure <- .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+
+						    content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = figure, obj = TRUE)
 						    plot[["convertible"]] <- TRUE
 						    plot[["obj"]] <- content[["obj"]]
 						    plot[["data"]] <- content[["png"]]

@@ -793,10 +793,10 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     
                     p <- try(silent= FALSE, expr= {
                         
-                        .plotFunc2 <- function() {
-                            .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-                        }
-                        content2 <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = .plotFunc2)
+
+                        figure <- .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+                            
+                        content2 <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = figure, obj = TRUE)
                         plot[["convertible"]] <- TRUE
                         plot[["obj"]] <- content2[["obj"]]
                         plot[["data"]] <- content2[["png"]]
