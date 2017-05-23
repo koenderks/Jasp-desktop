@@ -179,7 +179,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     errorFootnotes <- rep("no", length(options$pairs))
     
     state <- .retrieveState()
-    #figstate <- try(state[["figures"]], silent = TRUE)
     
     diff <- NULL
     
@@ -292,8 +291,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     if (options$plotPriorAndPosterior)
         results[["BFplots"]] <- list(title=ifelse(length(options$pairs) > 1, "Bayes factor Plots", "Bayes factor Plot"), collection=plots.ttest)
     
-    #pair.statuses <- list()
-    
     BF10post <- numeric(length(options$pairs))
     
     for (i in .indices(options$pairs))
@@ -309,8 +306,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
             
             p1 <- ifelse(pair[[1]] != "", pair[[1]], "...")
             p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
-            
-            #pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE)
             
             if(options$hypothesis == "groupsNotEqual"){
                 result_test <- list(Variable=currentPair, "hypothesis[type1]" = "Equal","BF[type1]"=".", "pmp[type1]" = ".",
@@ -347,8 +342,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                                                                                                                                                              && diff$bayesFactorType == FALSE && diff$missingValues == FALSE)))) {
                     
                     stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
-                    
-                    #pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
                     
                     # If there was no error
                     if (state$errorFootnotes[stateIndex] == "no") {
@@ -390,8 +383,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                     
                     # if pair is not in state
                 } else {
-                    
-                    #pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE)
                     
                     if(options$hypothesis == "groupsNotEqual"){
                         result_test <- list(Variable=currentPair, "hypothesis[type1]" = "Equal","BF[type1]"=".", "pmp[type1]" = ".",
@@ -468,8 +459,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                                                "pmp[equal]" = ".", .footnotes=list(BF=list(index2))) 
                         }
                     }
-                    
-                    #pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
                     
                     BF10post[i] <- state$BF10post[stateIndex]
                     
@@ -894,6 +883,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         .base_breaks_x(summaryStat$groupingVariable) +
         ggplot2::scale_x_discrete(labels=c(nameV1, nameV2))
     
-    print(p)
+    return(p)
     
 }
