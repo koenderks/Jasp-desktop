@@ -682,8 +682,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
             p1 <- ifelse(pair[[1]] != "", pair[[1]], "...")
             p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
             
-            sequentialIsViable <- TRUE
-            
             if (perform == "run" && status$unplotable == FALSE && p2 != "..." && p1 != "...") {
                 
                 subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
@@ -737,7 +735,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                     })
                     
                     if (class(p) == "try-error") {
-                        
+
                         errorMessageTmp <- .extractErrorMessage(p)
                         errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
                         plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
