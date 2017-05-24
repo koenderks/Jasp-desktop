@@ -920,8 +920,7 @@ as.list.footnotes <- function(footnotes) {
 		print(plot)
 	}
 	
-	#dev.off()
-	grDevices::graphics.off()
+	dev.off()
 	
 	# Save path & plot object to output
 	image[["png"]] <- relativePathpng

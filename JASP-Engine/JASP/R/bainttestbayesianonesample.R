@@ -858,83 +858,83 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     }
 }
 
-.qt.shiftedT <- function(prob, parameters) {
-    
-    qt(prob, parameters[3]) * parameters[2] + parameters[1]
-    
-}
+# .qt.shiftedT <- function(prob, parameters) {
+#     
+#     qt(prob, parameters[3]) * parameters[2] + parameters[1]
+#     
+# }
 
-.posteriorSummaryGroupMean <- function(variable, descriptivesPlotsCredibleInterval=.95) {
-    
-    # Assumes that data are normally distributed
-    # Jeffreys prior on mu and sigma: p(mu, sigma) proportional to 1/sigma
-    # Compare Gelman et al. "Bayesian Data Analysis" for derivation of marginal posterior distribution of mu (inference for unknown mean and variance of a normal distribution)
-    if (is.null(variable)) return(NULL)
-    
-    ciLower <- (1 - descriptivesPlotsCredibleInterval) / 2
-    ciUpper <- ciLower + descriptivesPlotsCredibleInterval
-    
-    df <- length(variable) - 1
-    location <- mean(variable)
-    scale <- sd(variable) / sqrt(length(variable))
-    
-    outTmp <- .qt.shiftedT(c(ciLower, .5, ciUpper), parameters=c(location, scale, df))
-    out <- list(ciLower=outTmp[1], median=outTmp[2], ciUpper=outTmp[3])
-    
-    return(out)
-    
-}
+# .posteriorSummaryGroupMean <- function(variable, descriptivesPlotsCredibleInterval=.95) {
+#     
+#     # Assumes that data are normally distributed
+#     # Jeffreys prior on mu and sigma: p(mu, sigma) proportional to 1/sigma
+#     # Compare Gelman et al. "Bayesian Data Analysis" for derivation of marginal posterior distribution of mu (inference for unknown mean and variance of a normal distribution)
+#     if (is.null(variable)) return(NULL)
+#     
+#     ciLower <- (1 - descriptivesPlotsCredibleInterval) / 2
+#     ciUpper <- ciLower + descriptivesPlotsCredibleInterval
+#     
+#     df <- length(variable) - 1
+#     location <- mean(variable)
+#     scale <- sd(variable) / sqrt(length(variable))
+#     
+#     outTmp <- .qt.shiftedT(c(ciLower, .5, ciUpper), parameters=c(location, scale, df))
+#     out <- list(ciLower=outTmp[1], median=outTmp[2], ciUpper=outTmp[3])
+#     
+#     return(out)
+#     
+# }
 
-.base_breaks_y2 <- function(x, testValue){
-    
-    values <- c(testValue, x$ciLower, x$ciUpper)
-    ci.pos <- c(min(values), max(values))
-    b <- pretty(ci.pos)
-    d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-    list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
-         ggplot2::scale_y_continuous(breaks=c(min(b), testValue, max(b))))
-}
+# .base_breaks_y2 <- function(x, testValue){
+#     
+#     values <- c(testValue, x$ciLower, x$ciUpper)
+#     ci.pos <- c(min(values), max(values))
+#     b <- pretty(ci.pos)
+#     d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+#     list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+#          ggplot2::scale_y_continuous(breaks=c(min(b), testValue, max(b))))
+# }
 
-.plotGroupMeanBayesOneSampleTtest <- function(variable=1:10, variableName="test1", testValueOpt=0, descriptivesPlotsCredibleInterval=.95) {
-    
-    
-    variable <- na.omit(variable)
-    
-    if (any(is.infinite(variable)))
-        stop("Plotting not possible: Variable contains infinity")
-    
-    testValue <- data.frame("testValue" = testValueOpt) # default zero
-    posteriorSummary <- .posteriorSummaryGroupMean(variable=variable, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
-    summaryStat <- data.frame(groupingVariable=variableName, dependent=posteriorSummary$median, ciLower=posteriorSummary$ciLower, ciUpper=posteriorSummary$ciUpper)
-    
-    pd <- ggplot2::position_dodge(.2)
-    
-    p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
-        ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
-        ggplot2::geom_line(position=pd, size = .7) +
-        ggplot2::geom_point(position=pd, size=4) +
-        ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept=testValue), linetype="dashed") +
-        ggplot2::ylab(NULL) +
-        ggplot2::xlab(NULL) +
-        ggplot2::theme_bw() +
-        ggplot2::theme(	panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-                        panel.grid.major=ggplot2::element_blank(),
-                        axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-                        axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(size=15),
-                        panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-                        plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-                        legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-                        panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-                        legend.key = ggplot2::element_blank(),
-                        legend.title = ggplot2::element_text(size=12),
-                        legend.text = ggplot2::element_text(size = 12),
-                        axis.ticks = ggplot2::element_line(size = 0.5),
-                        axis.ticks.margin = grid::unit(1,"mm"),
-                        axis.ticks.length = grid::unit(3, "mm"),
-                        axis.ticks.x = ggplot2::element_blank(),
-                        plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-        .base_breaks_y2(summaryStat, testValueOpt)
-    
-    print(p)
-    
-}
+# .plotGroupMeanBayesOneSampleTtest <- function(variable=1:10, variableName="test1", testValueOpt=0, descriptivesPlotsCredibleInterval=.95) {
+#     
+#     
+#     variable <- na.omit(variable)
+#     
+#     if (any(is.infinite(variable)))
+#         stop("Plotting not possible: Variable contains infinity")
+#     
+#     testValue <- data.frame("testValue" = testValueOpt) # default zero
+#     posteriorSummary <- .posteriorSummaryGroupMean(variable=variable, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
+#     summaryStat <- data.frame(groupingVariable=variableName, dependent=posteriorSummary$median, ciLower=posteriorSummary$ciLower, ciUpper=posteriorSummary$ciUpper)
+#     
+#     pd <- ggplot2::position_dodge(.2)
+#     
+#     p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
+#         ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
+#         ggplot2::geom_line(position=pd, size = .7) +
+#         ggplot2::geom_point(position=pd, size=4) +
+#         ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept=testValue), linetype="dashed") +
+#         ggplot2::ylab(NULL) +
+#         ggplot2::xlab(NULL) +
+#         ggplot2::theme_bw() +
+#         ggplot2::theme(	panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+#                         panel.grid.major=ggplot2::element_blank(),
+#                         axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
+#                         axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(size=15),
+#                         panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+#                         plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+#                         legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+#                         panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+#                         legend.key = ggplot2::element_blank(),
+#                         legend.title = ggplot2::element_text(size=12),
+#                         legend.text = ggplot2::element_text(size = 12),
+#                         axis.ticks = ggplot2::element_line(size = 0.5),
+#                         axis.ticks.margin = grid::unit(1,"mm"),
+#                         axis.ticks.length = grid::unit(3, "mm"),
+#                         axis.ticks.x = ggplot2::element_blank(),
+#                         plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
+#         .base_breaks_y2(summaryStat, testValueOpt)
+#     
+#     print(p)
+#     
+# }
