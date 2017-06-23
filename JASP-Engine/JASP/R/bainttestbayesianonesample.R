@@ -133,11 +133,11 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         fields <- list(
             list(name="Variable", type="string", title=""),
             list(name = "hypothesis[type1]", type = "string", title = "Hypothesis"),
-            list(name="BF[type1]", type="number", format="sf:4;dp:3", title=bf.title),
-            list(name="pmp[type1]", type="number", format="sf:4;dp:3", title="Posterior probability"),
+            list(name="BF[type1]", type="number", format="sf:4", title=bf.title),
+            list(name="pmp[type1]", type="number", format="sf:4", title="Posterior probability"),
             list(name = "hypothesis[type2]", type = "string", title = "Hypothesis"),
-            list(name="BF[type2]", type="number", format="sf:4;dp:3", title=bf.title),
-            list(name="pmp[type2]", type="number", format="sf:4;dp:3", title="Posterior probability"))
+            list(name="BF[type2]", type="number", format="sf:4", title=bf.title),
+            list(name="pmp[type2]", type="number", format="sf:4", title="Posterior probability"))
         
     }
     
@@ -148,14 +148,14 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         fields <- list(
             list(name="Variable", type="string", title=""),
             list(name = "type[greater]", type = "string", title = "Hypothesis"),
-            list(name="BF[greater]", type="number", format="sf:4;dp:3", title=bf.title),
-            list(name="pmp[greater]", type="number", format="sf:4;dp:3", title="Posterior probability"),
+            list(name="BF[greater]", type="number", format="sf:4", title=bf.title),
+            list(name="pmp[greater]", type="number", format="sf:4", title="Posterior probability"),
             list(name = "type[less]", type = "string", title = "Hypothesis"),
-            list(name="BF[less]", type="number", format="sf:4;dp:3", title="bf.title"),
-            list(name="pmp[less]", type="number", format="sf:4;dp:3", title="Posterior probability"),
+            list(name="BF[less]", type="number", format="sf:4", title="bf.title"),
+            list(name="pmp[less]", type="number", format="sf:4", title="Posterior probability"),
             list(name = "type[equal]", type = "string", title = "Hypothesis"),
-            list(name = "BF[equal]", type = "number", title = bf.title,format="sf:4;dp:3"),
-            list(name="pmp[equal]", type="number", format="sf:4;dp:3", title="Posterior probability"))
+            list(name = "BF[equal]", type = "number", title = bf.title,format="sf:4"),
+            list(name="pmp[equal]", type="number", format="sf:4", title="Posterior probability"))
         
     }
     
