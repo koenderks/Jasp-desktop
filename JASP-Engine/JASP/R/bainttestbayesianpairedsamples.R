@@ -119,7 +119,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         fields <- list(
             list(name="Variable", type="string", title=""),
             list(name = "type[greater]", type = "string", title = "Hypothesis"),
-            list(name="BF[greater]", type="number", format="dp:4", title=bf.title),
+            list(name="BF[greater]", type="number", format="dp:0", title=bf.title),
             list(name="pmp[greater]", type="number", format="dp:4", title="Posterior probability"),
             list(name = "type[less]", type = "string", title = "Hypothesis"),
             list(name="BF[less]", type="number", format="dp:4", title="bf.title"),
@@ -284,13 +284,13 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
             }
             if(options$hypothesis == "allTypes"){
                 result_test <-list(Variable=currentPair, 
-                                   "type[greater]" = "Equal vs. Bigger",
+                                   "type[greater]" = "Equal",
                                    "BF[greater]"= ".", 
                                    "pmp[greater]" = ".",
-                                   "type[less]"= "Equal vs. Smaller",
+                                   "type[less]"= "Smaller",
                                    "BF[less]" = ".", 
                                    "pmp[less]" = ".",
-                                   "type[equal]" = "Bigger vs. Smaller",
+                                   "type[equal]" = "Bigger",
                                    "BF[equal]" = ".",
                                    "pmp[equal]" = ".") 
             }
@@ -329,13 +329,13 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                         }
                         if(options$hypothesis == "allTypes"){
                             result_test <-list(Variable=currentPair, 
-                                               "type[greater]" = "Equal vs. Bigger",
+                                               "type[greater]" = "Equal",
                                                "BF[greater]"= .clean(NaN), 
                                                "pmp[greater]" = .clean(NaN),
-                                               "type[less]"= "Equal vs. Smaller",
+                                               "type[less]"= "Smaller",
                                                "BF[less]" = .clean(NaN), 
                                                "pmp[less]" = .clean(NaN),
-                                               "type[equal]" = "Bigger vs. Smaller",
+                                               "type[equal]" = "Bigger",
                                                "BF[equal]" = .clean(NaN),
                                                "pmp[equal]" = .clean(NaN)) 
                         }
@@ -357,13 +357,13 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                     }
                     if(options$hypothesis == "allTypes"){
                         result_test <-list(Variable=currentPair, 
-                                           "type[greater]" = "Equal vs. Bigger",
+                                           "type[greater]" = "Equal",
                                            "BF[greater]"= ".", 
                                            "pmp[greater]" = ".",
-                                           "type[less]"= "Equal vs. Smaller",
+                                           "type[less]"= "Smaller",
                                            "BF[less]" = ".", 
                                            "pmp[less]" = ".",
-                                           "type[equal]" = "Bigger vs. Smaller",
+                                           "type[equal]" = "Bigger",
                                            "BF[equal]" = ".",
                                            "pmp[equal]" = ".") 
                     }
@@ -403,13 +403,13 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                         }
                         if(options$hypothesis == "allTypes"){
                             result_test <-list(Variable=currentPair, 
-                                               "type[greater]" = "Equal vs. Bigger",
+                                               "type[greater]" = "Equal",
                                                "BF[greater]"= ".", 
                                                "pmp[greater]" = ".",
-                                               "type[less]"= "Equal vs. Smaller",
+                                               "type[less]"= "Smaller",
                                                "BF[less]" = ".", 
                                                "pmp[less]" = ".",
-                                               "type[equal]" = "Bigger vs. Smaller",
+                                               "type[equal]" = "Bigger",
                                                "BF[equal]" = ".",
                                                "pmp[equal]" = ".", .footnotes=list(BF=list(index2))) 
                         }
@@ -482,10 +482,12 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                                 BF_01 <- log(r$BF_01)
                                 BF_02 <- log(r$BF_02)
                                 BF_12 <- log(r$BF_12)
+                                c <- log(1)
                             } else {
                                 BF_01 <- r$BF_01
                                 BF_02 <- r$BF_02
                                 BF_12 <- r$BF_12
+                                c <- 1
                             }
                             
                             PMP_0 <- r$PMP_0
@@ -507,15 +509,15 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                         }
                         if(options$hypothesis == "allTypes"){
                             result_test <-list(Variable=currentPair, 
-                                               "type[greater]" = "Equal vs. Bigger",
-                                               "BF[greater]"= BF_01, 
-                                               "pmp[greater]" = PMP_0,
-                                               "type[less]"= "Equal vs. Smaller",
-                                               "BF[less]" = BF_02, 
-                                               "pmp[less]" = PMP_1,
-                                               "type[equal]" = "Bigger vs. Smaller",
-                                               "BF[equal]" = BF_12,
-                                               "pmp[equal]" = PMP_2) 
+                                               "type[greater]" = "Equal",
+                                               "BF[greater]"= .clean(c), 
+                                               "pmp[greater]" = .clean(PMP_0),
+                                               "type[less]"= "Smaller",
+                                               "BF[less]" = .clean(BF_02), 
+                                               "pmp[less]" = .clean(PMP_1),
+                                               "type[equal]" = "Bigger",
+                                               "BF[equal]" = .clean(BF_01),
+                                               "pmp[equal]" = .clean(PMP_2)) 
                         }
                         
                         if(informationFootnote){
@@ -547,13 +549,13 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         }
         if(options$hypothesis == "allTypes"){
             ttest.rows <-list(list(Variable=currentPair, 
-                                   "type[greater]" = "Equal vs. Bigger",
+                                   "type[greater]" = "Equal",
                                    "BF[greater]"= ".", 
                                    "pmp[greater]" = ".",
-                                   "type[less]"= "Equal vs. Smaller",
+                                   "type[less]"= "Smaller",
                                    "BF[less]" = ".", 
                                    "pmp[less]" = ".",
-                                   "type[equal]" = "Bigger vs. Smaller",
+                                   "type[equal]" = "Bigger",
                                    "BF[equal]" = ".",
                                    "pmp[equal]" = ".")) 
         }

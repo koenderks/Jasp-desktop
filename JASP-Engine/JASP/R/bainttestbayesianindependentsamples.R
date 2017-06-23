@@ -428,7 +428,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 	    fields <- list(
 	        list(name="Variable", type="string", title=""),
 	        list(name = "type[greater]", type = "string", title = "Hypothesis"),
-	        list(name="BF[greater]", type="number", format="dp:4", title=bf.title),
+	        list(name="BF[greater]", type="number", format="dp:0", title=bf.title),
 	        list(name="pmp[greater]", type="number", format="dp:4", title="Posterior probability"),
 	        list(name = "type[less]", type = "string", title = "Hypothesis"),
 	        list(name="BF[less]", type="number", format="dp:4", title=bf.title),
@@ -552,13 +552,13 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 					}
 					if(options$hypothesis == "allTypes"){
 					    result_test <-list(Variable=variable,
-					                       "type[greater]" = "Equal vs. Bigger",
+					                       "type[greater]" = "Equal",
 					                       "BF[greater]"= .clean(NaN),
 					                       "pmp[greater]" = .clean(NaN),
-					                       "type[less]"= "Equal vs. Smaller",
+					                       "type[less]"= "Smaller",
 					                       "BF[less]" = .clean(NaN),
 					                       "pmp[less]" = .clean(NaN),
-					                       "type[equal]" = "Bigger vs. Smaller",
+					                       "type[equal]" = "Bigger",
 					                       "BF[equal]" = .clean(NaN),
 					                       "pmp[equal]" = .clean(NaN),
 					                       .footnotes = list(BF=list(index2)))
@@ -667,13 +667,13 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 					    }
 					    if(options$hypothesis == "allTypes"){
 					        result_test <-list(Variable=variable,
-					                           "type[greater]" = "Equal vs. Bigger",
+					                           "type[greater]" = "Equal",
 					                           "BF[greater]"= .clean(NaN),
 					                           "pmp[greater]" = .clean(NaN),
-					                           "type[less]"= "Equal vs. Smaller",
+					                           "type[less]"= "Smaller",
 					                           "BF[less]" = .clean(NaN),
 					                           "pmp[less]" = .clean(NaN),
-					                           "type[equal]" = "Bigger vs. Smaller",
+					                           "type[equal]" = "Bigger",
 					                           "BF[equal]" = .clean(NaN),
 					                           "pmp[equal]" = .clean(NaN),
 					                           .footnotes = list(BF=list(index2)))
@@ -721,13 +721,13 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 				        }
 				        if(options$hypothesis == "allTypes"){
 				            result_test <-list(Variable=variable,
-				                               "type[greater]" = "Equal vs. Bigger",
+				                               "type[greater]" = "Equal",
 				                               "BF[greater]"= .clean(NaN),
 				                               "pmp[greater]" = .clean(NaN),
-				                               "type[less]"= "Equal vs. Smaller",
+				                               "type[less]"= "Smaller",
 				                               "BF[less]" = .clean(NaN),
 				                               "pmp[less]" = .clean(NaN),
-				                               "type[equal]" = "Bigger vs. Smaller",
+				                               "type[equal]" = "Bigger",
 				                               "BF[equal]" = .clean(NaN),
 				                               "pmp[equal]" = .clean(NaN),
 				                               .footnotes = row.footnotes)
@@ -798,10 +798,12 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						        BF_01 <- log(r$BF_01)
 						        BF_02 <- log(r$BF_02)
 						        BF_12 <- log(r$BF_12)
+						        c <- log(1)
 						    } else {
 						        BF_01 <- r$BF_01
 						        BF_02 <- r$BF_02
 						        BF_12 <- r$BF_12
+						        c <- 1
 						    }
 						    
 						    PMP_0 <- r$PMP_0
@@ -824,14 +826,14 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						}
 						if(options$hypothesis == "allTypes"){
 						    result_test <-list(Variable=variable,
-						                       "type[greater]" = "Equal vs. Bigger",
-						                       "BF[greater]"= .clean(BF_01),
+						                       "type[greater]" = "Equal",
+						                       "BF[greater]"= .clean(c),
 						                       "pmp[greater]" = .clean(PMP_0),
-						                       "type[less]"= "Equal vs. Smaller",
+						                       "type[less]"= "Smaller",
 						                       "BF[less]" = .clean(BF_02),
 						                       "pmp[less]" = .clean(PMP_1),
-						                       "type[equal]" = "Bigger vs. Smaller",
-						                       "BF[equal]" = .clean(BF_12),
+						                       "type[equal]" = "Bigger",
+						                       "BF[equal]" = .clean(BF_01),
 						                       "pmp[equal]" = .clean(PMP_2))
 						}
 						
