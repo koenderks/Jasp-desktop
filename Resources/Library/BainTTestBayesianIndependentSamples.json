@@ -4,10 +4,6 @@
 	"version": "1.00",
 	"options": [
 		{
-			"name": "model",
-			"type": "String"
-		},
-		{
 			"name": "variables",
 			"type": "Variables"
 		},
@@ -62,8 +58,8 @@
 		},
 		{
 			"name": "bayesFactorType",
-			"options": [ "BF10", "BF01", "LogBF10" ],
-			"default": "BF10",
+            "options": [ "BF01", "LogBF10" ],
+            "default": "BF01",
 			"type": "List"
 		}
 	]

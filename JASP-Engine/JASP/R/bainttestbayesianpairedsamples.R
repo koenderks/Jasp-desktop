@@ -62,72 +62,36 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     
     bf.type <- options$bayesFactorType
     
-    if (bf.type == "BF10") {
+    if (bf.type == "LogBF10") {
         
         BFH1H0 <- TRUE
         
-        if (options$hypothesis == "groupsNotEqual") {
-            bf.title <- "BF\u2080\u2081"
-        }
-        if (options$hypothesis == "groupOneGreater") {
-            bf.title <- "BF\u2080\u2081"
-        }
-        if (options$hypothesis == "groupTwoGreater") {
-            bf.title <- "BF\u2080\u2081"
-        } else {
-            bf.title <- "BF\u2080\u2081"
-        }
-        
-    } else if (bf.type == "LogBF10") {
-        
-        BFH1H0 <- TRUE
-        
-        if (options$hypothesis == "groupsNotEqual") {
-            bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
-        }
-        if (options$hypothesis == "groupOneGreater") {
-            bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
-        }
-        if (options$hypothesis == "groupTwoGreater") {
-            bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
-        } else {
-            bf.title <- "BF\u2081\u2080" 
-        }
+        bf.title <- "Log(BF equal vs - )"
         
     } else if (bf.type == "BF01") {
         
         BFH1H0 <- FALSE
         
-        if (options$hypothesis == "groupsNotEqual") {
-            bf.title <- "BF\u2080\u2081"
-        }
-        if (options$hypothesis == "groupOneGreater") {
-            bf.title <- "BF\u2080\u208A"
-        }
-        if (options$hypothesis == "groupTwoGreater") {
-            bf.title <- "BF\u2080\u208B"
-        } else {
-            bf.title <- "BF\u2081\u2080" 
-        }
+        bf.title <- "BF equal vs - "
     }
     
     footnotes <- .newFootnotes()
     
     if (options$hypothesis == "groupsNotEqual") {
         type <- 1
-        note <- "For all tests, the alternative hypothesis specifies that the means of the measurements are not equal."
+        note <- "For all tests, H\u2080: mu1 = mu2 is tested against H\u2081:mu1 \u2260 mu2"
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "groupOneGreater") {
         type <- 2
-        note <- "For all tests, the alternative hypothesis specifies that the mean of variable 1 is bigger than that of variable 2."
+        note <- "For all tests, H\u2080: mu1 = mu2 is tested against H\u2081: mu1 > mu2"
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "groupTwoGreater") {
         type <- 3
-        note <- "For all tests, the alternative hypothesis specifies that the mean of variable 1 is smaller than that of variable 2."
+        note <- "For all tests, H\u2080: mu1 = mu2 is tested against H\u2081: mu1 < mu2"
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "allTypes"){
         type <- 4
-        note <- "For all pairs, all three hypotheses are tested."
+        note <- "For all tests, H\u2081: mu1 > mu2 and H\u2082: mu1 < mu2 are compared to H\u2080: mu1 = mu2"
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     }
     
@@ -301,7 +265,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         
         tablePairs[[length(tablePairs)+1]] <- paste(pair, collapse=" - ")
         
-        # If only one of pairs is selected
         if (pair[[1]] == "" || pair[[2]] == "") {
             
             p1 <- ifelse(pair[[1]] != "", pair[[1]], "...")
@@ -337,18 +300,15 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
             # init perform
             if (perform == "init") {
                 
-                # If pair is in state
                 if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$hypothesis == FALSE
                                                                                                                                                              && diff$bayesFactorType == FALSE && diff$missingValues == FALSE)))) {
                     
                     stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
                     
-                    # If there was no error
                     if (state$errorFootnotes[stateIndex] == "no") {
                         
                         result_test <- state$results$ttest$data[[stateIndex]]
                         
-                        # if there was an error
                     } else {
                         
                         index2 <- .addFootnote(footnotes2, state$errorFootnotes[stateIndex])
@@ -381,7 +341,6 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                         }
                     }
                     
-                    # if pair is not in state
                 } else {
                     
                     if(options$hypothesis == "groupsNotEqual"){
@@ -410,24 +369,20 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                     }
                 }
                 
-                # if perform is run
             } else {
                 
                 unplotable <- FALSE
                 unplotableMessage <- NULL
                 
-                # if pair is in state
                 if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$hypothesis == FALSE
                                                                                                                                                              && diff$bayesFactorType == FALSE && diff$missingValues == FALSE)))) {
                     
                     stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
                     
-                    # if there was no error
                     if (state$errorFootnotes[stateIndex] == "no") {
                         
                         result_test <- state$results$ttest$data[[stateIndex]]
                         
-                        # if there was an error
                     } else {
                         
                         index2 <- .addFootnote(footnotes2, state$errorFootnotes[stateIndex])
@@ -476,30 +431,67 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                         
                         r <- Bain::Bain_ttestData(c1, c2, paired = TRUE,type = type)
                         
+                        informationFootnote <- FALSE
+                        
+                        if(any(is.na(r))){
+                            informationFootnote <- TRUE
+                            note <- "Bayes factor could not be calculated, there are no samples drawn from the constrained area under the curve."
+                            index <- .addFootnote(footnotes, note, symbol = "<em>NaN: </em>")
+                            row.footnotes <- list(t = list(index))
+                        }
+                        
+                        if(options[["bayesFactorType"]] == "LogBF10"){
+                            makeLog <- TRUE
+                        } else {
+                            makeLog <- FALSE
+                        }
+                        
                         if(type == 1){
-                            BF_0u <- r$BF_0u
+                            
+                            if(makeLog){
+                                BF_0u <- log(r$BF_0u)
+                            } else {
+                                BF_0u <- r$BF_0u
+                            }
+                            
                             PMP_u <- r$PMP_u
                             PMP_0 <- r$PMP_0
-                        } 
-                        if(type == 2){
-                            BF_01 <- r$BF_01
+                        } else if(type == 2){
+                            
+                            if(makeLog){
+                                BF_01 <- log(r$BF_01)
+                            } else{
+                                BF_01 <- r$BF_01
+                            }
+                            
                             PMP_1 <- r$PMP_1
                             PMP_0 <- r$PMP_0
-                        }
-                        if(type == 3){
-                            BF_01 <- r$BF_01
+                        } else if(type == 3){
+                            
+                            if(makeLog){
+                                BF_01 <- log(r$BF_01)
+                            } else{
+                                BF_01 <- r$BF_01
+                            }
+                            
                             PMP_0 <- r$PMP_0
                             PMP_1 <- r$PMP_1
-                        }
-                        if(type == 4){
-                            BF_01 <- r$BF_01
-                            BF_02 <- r$BF_02
-                            BF_12 <- r$BF_12
+                        } else if (type == 4) {
+                            
+                            if(makeLog){
+                                BF_01 <- log(r$BF_01)
+                                BF_02 <- log(r$BF_02)
+                                BF_12 <- log(r$BF_12)
+                            } else {
+                                BF_01 <- r$BF_01
+                                BF_02 <- r$BF_02
+                                BF_12 <- r$BF_12
+                            }
+                            
                             PMP_0 <- r$PMP_0
                             PMP_1 <- r$PMP_1
                             PMP_2 <- r$PMP_2
                         }
-                        
                         
                         if(options$hypothesis == "groupsNotEqual"){
                             result_test <- list(Variable=currentPair, "hypothesis[type1]" = "Equal","BF[type1]"=BF_0u, "pmp[type1]" = PMP_0,
@@ -525,6 +517,11 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                                                "BF[equal]" = BF_12,
                                                "pmp[equal]" = PMP_2) 
                         }
+                        
+                        if(informationFootnote){
+                            result_test[[".footnotes"]] <- row.footnotes
+                        }
+                        
                     }
                 }
             }
@@ -842,47 +839,3 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     }
     
 }
-
-# .plot2GroupMeansBayesPairedTtest <- function(v1=NULL, v2=NULL, nameV1=NULL, nameV2=NULL, descriptivesPlotsCredibleInterval=.95) {
-#     
-#     v1 <- na.omit(v1)
-#     v2 <- na.omit(v2)
-#     
-#     if (any(is.infinite(v1)) || any(is.infinite(v2)))
-#         stop("Plotting not possible: Variable contains infinity")
-#     
-#     posteriorSummary1 <- .posteriorSummaryGroupMean(variable=v1, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
-#     posteriorSummary2 <- .posteriorSummaryGroupMean(variable=v2, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
-#     summaryStat <- data.frame(groupingVariable=c(nameV1, nameV2), dependent=c(posteriorSummary1$median, posteriorSummary2$median), ciLower=c(posteriorSummary1$ciLower, posteriorSummary2$ciLower), ciUpper=c(posteriorSummary1$ciUpper, posteriorSummary2$ciUpper))
-#     
-#     pd <- ggplot2::position_dodge(.2)
-#     
-#     p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
-#         ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
-#         ggplot2::geom_line(position=pd, size = .7) +
-#         ggplot2::geom_point(position=pd, size=4) +
-#         ggplot2::ylab(NULL) +
-#         ggplot2::xlab(NULL) +
-#         ggplot2::theme_bw() +
-#         ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-#                        panel.grid.major=ggplot2::element_blank(),
-#                        axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-#                        axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-#                        panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-#                        plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-#                        legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-#                        panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-#                        legend.key = ggplot2::element_blank(),
-#                        legend.title = ggplot2::element_text(size=12),
-#                        legend.text = ggplot2::element_text(size = 12),
-#                        axis.ticks = ggplot2::element_line(size = 0.5),
-#                        axis.ticks.margin = grid::unit(1,"mm"),
-#                        axis.ticks.length = grid::unit(3, "mm"),
-#                        plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-#         .base_breaks_y3(summaryStat) +
-#         .base_breaks_x(summaryStat$groupingVariable) +
-#         ggplot2::scale_x_discrete(labels=c(nameV1, nameV2))
-#     
-#     return(p)
-#     
-# }

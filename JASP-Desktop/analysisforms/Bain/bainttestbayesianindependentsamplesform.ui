@@ -83,7 +83,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Equal vs. Smaller</string>
+               <string>Equal vs Smaller</string>
               </property>
              </widget>
             </item>
@@ -96,7 +96,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Equal vs. Bigger</string>
+               <string>Equal vs Bigger</string>
               </property>
              </widget>
             </item>
@@ -122,14 +122,14 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Equal vs. Not equal</string>
+               <string>Equal vs Not equal</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
              <widget class="QRadioButton" name="allTypes">
               <property name="text">
-               <string>Equal vs. Bigger vs. Smaller</string>
+               <string>Equal vs Bigger vs Smaller</string>
               </property>
              </widget>
             </item>
@@ -146,19 +146,6 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="_1">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>BF₁₀</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
              <widget class="QRadioButton" name="_2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -171,7 +158,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="1" column="0">
              <widget class="QRadioButton" name="_3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -180,11 +167,11 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Log( BF₁₀ )</string>
+               <string>Log( BF₀₁ )</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
+            <item row="0" column="1">
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -318,7 +305,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Bayes Factor comparison</string>
+               <string>Posterior probability</string>
               </property>
              </widget>
             </item>
@@ -442,7 +429,7 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item row="2" column="0">
+      <item row="1" column="0">
        <widget class="QWidget" name="model_constraints" native="true">
         <layout class="QGridLayout" name="gridLayout_14">
          <property name="leftMargin">
@@ -457,17 +444,7 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="1">
-          <widget class="BoundTextEdit" name="model"/>
-         </item>
         </layout>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="constraintsExpander">
-        <property name="text">
-         <string>Model Constraints</string>
-        </property>
        </widget>
       </item>
      </layout>
@@ -658,11 +635,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -672,11 +644,6 @@
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/boundtextedit.h</header>
   </customwidget>
   <customwidget>
    <class>AssignButton</class>
