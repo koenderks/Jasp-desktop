@@ -90,7 +90,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         note <- "For all tests, H\u2080: mu1 = mu2 is tested against H\u2081: mu1 < mu2"
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "allTypes"){
-        type <- 4
+        type <- 5
         note <- "For all tests, H\u2081: mu1 > mu2 and H\u2082: mu1 < mu2 are compared to H\u2080: mu1 = mu2"
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     }
@@ -114,7 +114,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     
     if(options$hypothesis == "allTypes"){
         
-        type <- 4
+        type <- 5
         
         fields <- list(
             list(name="Variable", type="string", title=""),
@@ -476,7 +476,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                             
                             PMP_0 <- r$PMP_0
                             PMP_1 <- r$PMP_1
-                        } else if (type == 4) {
+                        } else if (type == 5) {
                             
                             if(makeLog){
                                 BF_01 <- log(r$BF_01)

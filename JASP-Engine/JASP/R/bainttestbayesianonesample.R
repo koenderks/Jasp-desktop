@@ -97,7 +97,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     
     if(options$hypothesis == "allTypes"){
         
-        type <- 4
+        type <- 5
         
         fields <- list(
             list(name="Variable", type="string", title=""),
@@ -555,7 +555,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     
                     PMP_0 <- r$PMP_0
                     PMP_1 <- r$PMP_1
-                } else if (type == 4) {
+                } else if (type == 5) {
                     
                     if(makeLog){
                         BF_01 <- log(r$BF_01)

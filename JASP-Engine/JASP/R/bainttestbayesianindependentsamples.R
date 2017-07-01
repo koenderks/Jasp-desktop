@@ -257,13 +257,6 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 						}
 
-						# if (class(p) == "try-error") {
-						#
-						# 	errorMessageTmp <- .extractErrorMessage(p)
-						# 	errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-						# 	plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-						# }
-
 						plot[["status"]] <- "complete"
 
 						descriptivesPlots[[descriptInd]] <- plot
@@ -298,13 +291,6 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 				            return()
 
 				        plot <- BFplots[[BFind]]
-
-				        # if (class(p) == "try-error") {
-				        #
-				        # 	errorMessageTmp <- .extractErrorMessage(p)
-				        # 	errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-				        # 	plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-				        # }
 
 				        if(Bainresult[[i]] == "error"){
 
@@ -349,9 +335,6 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 
 	keep <- NULL
-
-	# for (plot in plots.ttest)
-	# 	keep <- c(keep, plot$data)
 
 	for(plot in BFplots)
 	    keep <- c(keep, plot$data)
@@ -471,7 +454,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 	} else if (options$hypothesis == "allTypes"){
 
-	    type <- 4
+	    type <- 5
 
 	   message <- paste("For all tests, H\u2081: group ", g1, " > group ", g2, " and H\u2082: group ", g1, " < group ", g2, " are compared to H\u2080: group ", g1, " = group ", g2, sep = "")
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
@@ -505,34 +488,6 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 				if (state$Bainresult[index] != "error") {
 
 					ttest.rows[[length(ttest.rows)+1]] <- state$results$ttest$data[[index]]
-
-					#if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
-					#
-					# 	if (state$options$bayesFactorType == "BF10") {
-					#
-					# 		if (options$bayesFactorType == "BF01") {
-					# 			ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-					# 		} else if (options$bayesFactorType == "LogBF10") {
-					# 			ttest.rows[[length(ttest.rows)]]$BF <- log(state$results$ttest$data[[index]]$BF)
-					# 		}
-					#
-					# 	} else if (state$options$bayesFactorType == "BF01") {
-					#
-					# 		if (options$bayesFactorType == "BF10") {
-					# 			ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-					# 		} else if (options$bayesFactorType == "LogBF10") {
-					# 			ttest.rows[[length(ttest.rows)]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
-					# 		}
-					#
-					# 	} else if (state$options$bayesFactorType == "LogBF10") {
-					#
-					# 		if (options$bayesFactorType == "BF10") {
-					# 			ttest.rows[[length(ttest.rows)]]$BF <- exp(state$results$ttest$data[[index]]$BF)
-					# 		} else if (options$bayesFactorType == "BF01") {
-					# 			ttest.rows[[length(ttest.rows)]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
-					# 		}
-					# 	}
-					# }
 
 				} else {
 
@@ -618,34 +573,6 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 					if (state$Bainresult[[index]] != "error") {
 
 						ttest.rows[[i]] <- state$results$ttest$data[[index]]
-
-						# if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
-						#
-						# 	if (state$options$bayesFactorType == "BF10") {
-						#
-						# 		if (options$bayesFactorType == "BF01") {
-						# 			ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-						# 		} else if (options$bayesFactorType == "LogBF10") {
-						# 			ttest.rows[[rowNo]]$BF <- log(state$results$ttest$data[[index]]$BF)
-						# 		}
-						#
-						# 	} else if (state$options$bayesFactorType == "BF01") {
-						#
-						# 		if (options$bayesFactorType == "BF10") {
-						# 			ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-						# 		} else if (options$bayesFactorType == "LogBF10") {
-						# 			ttest.rows[[rowNo]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
-						# 		}
-						#
-						# 	} else if (state$options$bayesFactorType == "LogBF10") {
-						#
-						# 		if (options$bayesFactorType == "BF10") {
-						# 			ttest.rows[[rowNo]]$BF <- exp(state$results$ttest$data[[index]]$BF)
-						# 		} else if (options$bayesFactorType == "BF01") {
-						# 			ttest.rows[[rowNo]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
-						# 		}
-						# 	}
-						# }
 
 					} else if (state$Bainresult[[index]] == "error") {
 
@@ -792,7 +719,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						    
 						    PMP_0 <- r$PMP_0
 						    PMP_1 <- r$PMP_1
-						} else if (type == 4) {
+						} else if (type == 5) {
 						    
 						    if(makeLog){
 						        BF_01 <- log(r$BF_01)
@@ -840,49 +767,6 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						if(informationFootnote){
 						    result_test[[".footnotes"]] <- row.footnotes
 						}
-
-					# if (class(result) == "try-error") {
-					#
-					# 	errorMessage <- .extractErrorMessage(result)
-					#
-					# 	plottingError[rowNo] <- paste("Plotting is not possible:", errorMessage, sep=" ")
-					#
-					# 	if (errorMessage == "Dependent variable must not contain missing or infinite values.") {
-					#
-					# 		errorMessage <- "Bayes factor is undefined - the dependent variable contains infinity"
-					# 		status[rowNo] <- "error"
-					# 		plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the dependent variable contains infinity"
-					#
-					# 	} else if (errorMessage == "grouping factor must have exactly 2 levels") {
-					#
-					# 		# We know that the grouping factor *does* have two levels, because we've checked this earlier on
-					# 		# This error means that all of one factor has been excluded because of missing values in the dependent
-					#
-					# 		errorMessage <- "Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
-					# 		status[rowNo] <- "error"
-					# 		plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
-					#
-					# 	} else if (errorMessage == "data are essentially constant") {
-					#
-					# 		errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
-					# 		status[rowNo] <- "error"
-					# 		plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
-					#
-					# 	} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-					#
-					# 		errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain too few observations"
-					# 		status[rowNo] <- "error"
-					# 		plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain too few observations"
-					# 	}
-					#
-					# 	index <- .addFootnote(footnotes, errorMessage)
-					#
-					# 	errorFootnotes[rowNo] <- errorMessage
-					#
-					# 	result <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-					#
-					# 	status[rowNo] <- "error"
-					# }
 
 				    }
 
