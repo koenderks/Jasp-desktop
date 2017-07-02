@@ -62,17 +62,36 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     
     bf.type <- options$bayesFactorType
     
-    if (bf.type == "LogBF10") {
+    if(options$hypothesis == "biggerSmaller"){
         
-        BFH1H0 <- TRUE
+        if (bf.type == "LogBF10") {
+            
+            BFH1H0 <- TRUE
+            
+            bf.title <- "Log(BF bigger vs - )"
+            
+        } else if (bf.type == "BF01") {
+            
+            BFH1H0 <- FALSE
+            
+            bf.title <- "BF bigger vs - "
+        }
         
-        bf.title <- "Log(BF equal vs - )"
+    } else {
         
-    } else if (bf.type == "BF01") {
+        if (bf.type == "LogBF10") {
+            
+            BFH1H0 <- TRUE
+            
+            bf.title <- "Log(BF equal vs - )"
+            
+        } else if (bf.type == "BF01") {
+            
+            BFH1H0 <- FALSE
+            
+            bf.title <- "BF equal vs - "
+        }
         
-        BFH1H0 <- FALSE
-        
-        bf.title <- "BF equal vs - "
     }
     
     footnotes <- .newFootnotes()
@@ -89,6 +108,10 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         type <- 3
         note <- "For all tests, H\u2080: mu1 = mu2 is tested against H\u2081: mu1 < mu2"
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
+    } else if (options$hypothesis == "biggerSmaller"){
+        type <- 4
+        note <- paste("For all tests, H\u2080: mu1 > mu2 is tested against H\u2081: mu1 < mu2", sep = "")
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "allTypes"){
         type <- 5
         note <- "For all tests, H\u2081: mu1 > mu2 and H\u2082: mu1 < mu2 are compared to H\u2080: mu1 = mu2"
@@ -97,7 +120,8 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     
     if (options$hypothesis == "groupsNotEqual" | 
         options$hypothesis == "groupOneGreater" | 
-        options$hypothesis == 'groupTwoGreater') {
+        options$hypothesis == 'groupTwoGreater' |
+        options$hypothesis == "biggerSmaller") {
         
         
         fields <- list(
@@ -282,6 +306,10 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                 result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Equal", "BF[type1]"= ".", "pmp[type1]" = ".",
                                    "hypothesis[type2]" = "Bigger", "BF[type2]" = ".", "pmp[type2]" = ".")
             }
+            if(options$hypothesis == "biggerSmaller"){
+                result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Bigger", "BF[type1]"= ".", "pmp[type1]" = ".",
+                                   "hypothesis[type2]" = "Smaller", "BF[type2]" = ".", "pmp[type2]" = ".")
+            }
             if(options$hypothesis == "allTypes"){
                 result_test <-list(Variable=currentPair, 
                                    "type[greater]" = "Equal",
@@ -327,6 +355,10 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                             result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Equal", "BF[type1]"= .clean(NaN), "pmp[type1]" = .clean(NaN),
                                                "hypothesis[type2]" = "Bigger", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN))
                         }
+                        if(options$hypothesis == "biggerSmaller"){
+                            result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Bigger", "BF[type1]"= .clean(NaN), "pmp[type1]" = .clean(NaN),
+                                               "hypothesis[type2]" = "Smaller", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN))
+                        }
                         if(options$hypothesis == "allTypes"){
                             result_test <-list(Variable=currentPair, 
                                                "type[greater]" = "Equal",
@@ -354,6 +386,10 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                     if(options$hypothesis == "groupOneGreater"){
                         result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Equal", "BF[type1]"= ".", "pmp[type1]" = ".",
                                            "hypothesis[type2]" = "Bigger", "BF[type2]" = ".", "pmp[type2]" = ".")
+                    }
+                    if(options$hypothesis == "biggerSmaller"){
+                        result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Bigger", "BF[type1]"= ".", "pmp[type1]" = ".",
+                                           "hypothesis[type2]" = "Smaller", "BF[type2]" = ".", "pmp[type2]" = ".")
                     }
                     if(options$hypothesis == "allTypes"){
                         result_test <-list(Variable=currentPair, 
@@ -400,6 +436,10 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                         if(options$hypothesis == "groupOneGreater"){
                             result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Equal", "BF[type1]"= ".", "pmp[type1]" = ".",
                                                "hypothesis[type2]" = "Bigger", "BF[type2]" = ".", "pmp[type2]" = ".", .footnotes=list(BF=list(index2)))
+                        }
+                        if(options$hypothesis == "biggerSmaller"){
+                            result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Bigger", "BF[type1]"= ".", "pmp[type1]" = ".",
+                                               "hypothesis[type2]" = "Smaller", "BF[type2]" = ".", "pmp[type2]" = ".",.footnotes=list(BF=list(index2)))
                         }
                         if(options$hypothesis == "allTypes"){
                             result_test <-list(Variable=currentPair, 
@@ -476,7 +516,18 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                             
                             PMP_0 <- r$PMP_0
                             PMP_1 <- r$PMP_1
-                        } else if (type == 5) {
+                        } else if (type == 4){
+                            
+                            if(makeLog){
+                                BF_12 <- log(r$BF_12)
+                            } else {
+                                BF_12 <- r$BF_12
+                            }
+                            
+                            PMP_1 <- r$PMP_1
+                            PMP_2 <- r$PMP_2
+                            
+                        } else if(type == 5) {
                             
                             if(makeLog){
                                 BF_01 <- log(r$BF_01)
@@ -506,6 +557,10 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
                         if(options$hypothesis == "groupOneGreater"){
                             result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Equal", "BF[type1]"= BF_01, "pmp[type1]" = PMP_0,
                                                "hypothesis[type2]" = "Bigger", "BF[type2]" = "", "pmp[type2]" = PMP_1)
+                        }
+                        if(options$hypothesis == "biggerSmaller"){
+                            result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Bigger", "BF[type1]"=.clean(BF_12), "pmp[type1]" = .clean(PMP_1),
+                                               "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_2)) 
                         }
                         if(options$hypothesis == "allTypes"){
                             result_test <-list(Variable=currentPair, 
@@ -546,6 +601,10 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         if(options$hypothesis == "groupOneGreater"){
             ttest.rows <-list(list(Variable=currentPair, "hypothesis[type1]" = "Equal", "BF[type1]"= ".", "pmp[type1]" = ".",
                                    "hypothesis[type2]" = "Bigger", "BF[type2]" = ".", "pmp[type2]" = "."))
+        }
+        if(options$hypothesis == "biggerSmaller"){
+            result_test <-list(Variable=currentPair, "hypothesis[type1]" = "Bigger", "BF[type1]"= ".", "pmp[type1]" = ".",
+                               "hypothesis[type2]" = "Smaller", "BF[type2]" = ".", "pmp[type2]" = ".")
         }
         if(options$hypothesis == "allTypes"){
             ttest.rows <-list(list(Variable=currentPair, 

@@ -62,27 +62,46 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     
     # Set the title of the Bayes Factor column
     
-    if (bf.type == "LogBF10") {
+    if(!options$hypothesis == "biggerSmaller"){
         
-        BFH1H0 <- TRUE
+        if (bf.type == "LogBF10") {
+            
+            BFH1H0 <- TRUE
+            
+            bf.title <- "Log(BF equal vs - )"
+            
+        } else if (bf.type == "BF01") {
+            
+            BFH1H0 <- FALSE
+            
+            bf.title <- "BF equal vs - "
+            
+        } 
         
-        bf.title <- "Log(BF equal vs - )"
+    } else {
         
-    } else if (bf.type == "BF01") {
-        
-        BFH1H0 <- FALSE
-        
-        bf.title <- "BF equal vs - "
+        if (bf.type == "LogBF10") {
+            
+            BFH1H0 <- TRUE
+            
+            bf.title <- "Log(BF bigger vs - )"
+            
+        } else if (bf.type == "BF01") {
+            
+            BFH1H0 <- FALSE
+            
+            bf.title <- "BF bigger vs - "
+            
+        }
         
     }
-    
     
     # Make the fields for the t-test table
     
     if (options$hypothesis == "notEqualToTestValue" | 
         options$hypothesis == "greaterThanTestValue" | 
-        options$hypothesis == 'lessThanTestValue') {
-        
+        options$hypothesis == 'lessThanTestValue' | 
+        options$hypothesis == "biggerSmaller") {
         
         fields <- list(
             list(name="Variable", type="string", title=""),
@@ -96,8 +115,6 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     }
     
     if(options$hypothesis == "allTypes"){
-        
-        type <- 5
         
         fields <- list(
             list(name="Variable", type="string", title=""),
@@ -147,13 +164,23 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
         message <- paste0(note, options$testValue, ".")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
+    } else if (options$hypothesis == "biggerSmaller"){
+        
+        type <- 4
+        
+        note <- paste("For all tests, H\u2080: mu > ", options$testValue, " and H\u2081: mu < ", sep = "")
+        message <- paste0(note, options$testValue, ".")
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+        
     } else if (options$hypothesis == "allTypes"){
+        
+        type <- 5
         
         note <- paste("For all tests, H\u2081: mu > ", options$testValue, " and H\u2082: mu < ", options$testValue, " are tested against H\u2080: mu = ", sep = "")
         message <- paste0(note, options$testValue, ".")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
-    } 
+    }
  
     # Make state lists
     
@@ -240,9 +267,6 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 descriptivesPlot <- list()
                 
                 descriptivesPlot[["title"]] <- variable
-                # descriptivesPlot[["width"]] <- options$plotWidth
-                # descriptivesPlot[["height"]] <- options$plotHeight
-                # descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
                 descriptivesPlot[["status"]] <- "waiting"
                 descriptivesPlot[["data"]] <- ""
                 
@@ -271,9 +295,6 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 BFplot <- list()
                 
                 BFplot[["title"]] <- variable
-                # BFplot[["width"]] <- options$plotWidth
-                # BFplot[["height"]] <- options$plotHeight
-                # BFplot[["custom"]] <- list(width="plotWidth", height="plotHeight")
                 BFplot[["status"]] <- "waiting"
                 BFplot[["data"]] <- ""
                 
@@ -423,6 +444,10 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
                                        "hypothesis[type2]" = "Smaller", "BF[type2]" = .clear(NaN), "pmp[type2]" = .clear(NaN),.footnotes = list(BF=list(index2)))
                 }
+                if (options$hypothesis == "biggerSmaller"){
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Bigger", "BF[type1]"=.clean(NaN), "pmp[type1]" = .clean(NaN),
+                                       "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(NaN), .footnotes = list(BF=list(index2))) 
+                }
                 if(options$hypothesis == "allTypes"){
                     result_test <-list(Variable=variable, 
                                        "type[greater]" = "Equal",
@@ -477,6 +502,10 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     if(options$hypothesis == "lessThanTestValue"){
                         result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),
                                            "hypothesis[type2]" = "Smaller", "BF[type2]" = .clear(NaN), "pmp[type2]" = .clear(NaN),.footnotes = row.footnotes)
+                    }
+                    if (options$hypothesis == "biggerSmaller"){
+                        result_test <-list(Variable=variable, "hypothesis[type1]" = "Bigger", "BF[type1]"=.clean(NaN), "pmp[type1]" = .clean(NaN),
+                                           "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(NaN), .footnotes = row.footnotes) 
                     }
                     if(options$hypothesis == "allTypes"){
                         result_test <-list(Variable=variable, 
@@ -555,7 +584,18 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     
                     PMP_0 <- r$PMP_0
                     PMP_1 <- r$PMP_1
-                } else if (type == 5) {
+                } else if (type == 4){
+                    
+                    if(makeLog){
+                        BF_12 <- log(r$BF_12)
+                    } else{
+                        BF_12 <- r$BF_12
+                    }
+                    
+                    PMP_1 <- r$PMP_1
+                    PMP_2 <- r$PMP_2
+                    
+                    } else if(type == 5) {
                     
                     if(makeLog){
                         BF_01 <- log(r$BF_01)
@@ -583,6 +623,9 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                 } else if(options$hypothesis == "lessThanTestValue"){
                     result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"=.clean(BF_01), "pmp[type1]" = .clean(PMP_0),
                                             "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_1))
+                } else if (options$hypothesis == "biggerSmaller"){
+                    result_test <-list(Variable=variable, "hypothesis[type1]" = "Bigger", "BF[type1]"=.clean(BF_12), "pmp[type1]" = .clean(PMP_1),
+                                       "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_2)) 
                 } else if (options$hypothesis == "allTypes"){
                     result_test <-list(Variable=variable, 
                                        "type[greater]" = "Equal",
@@ -651,13 +694,6 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     
                     }
                     
-                    # if (class(p) == "try-error") {
-                    # 
-                    # 	errorMessageTmp <- .extractErrorMessage(p)
-                    # 	errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-                    # 	plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-                    # }
-                    
                     plot[["status"]] <- "complete"
                     
                     BFplots[[BFind]] <- plot
@@ -671,54 +707,6 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     return()
 
             }
-            
-            
-            # if (class(result_test) == "try-error") {
-            # 
-            # 	errorMessage <- .extractErrorMessage(result_test)
-            # 
-            # 	if (errorMessage == "x or y must not contain missing or infinite values.") {
-            # 
-            # 		errorMessage <- paste("Bayes factor is undefined - the sample contains infinity")
-            # 
-            # 		status[i] <- "error"
-            # 		plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample contains infinity"
-            # 
-            # 	} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-            # 
-            # 		errorMessage <- "Bayes factor is undefined - too few observations"
-            # 
-            # 		status[i] <- "error"
-            # 		plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample has too few observations"
-            # 	}
-            # 
-            # 	status[i] <- "error"
-            # 	plottingError[i] <- paste("Plotting is not possible:", errorMessage)
-            # 
-            # 	errorFootnotes[i] <- errorMessage
-            # 
-            # 	index <- .addFootnote(footnotes, errorMessage)
-            # 
-            # 	result_test <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-            # 
-            # 	ttest.rows[[i]] <- result_test
-            # 
-            # } else {
-            
-            # if (is.na(bf.raw)) {
-            # 
-            # 	status[i] <- "error"
-            # 	plottingError[i] <- "Plotting is not possible: Bayes factor could not be calculated"
-            # } else if (is.infinite(1 / bf.raw)) {
-            # 
-            # 	status[i] <- "error"
-            # 	plottingError[i] <- "Plotting is not possible: The Bayes factor is too small"
-            # }
-            
-            # ind <- which(variableData == variableData[1])
-            # idData <- sum((ind+1)-(1:(length(ind))) == 1)
-            
-            # }
             
             i <- i + 1
         }
@@ -785,13 +773,6 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
                     })
                     
                     }
-                    
-                    # if (class(p) == "try-error") {
-                    # 
-                    # 	errorMessageTmp <- .extractErrorMessage(p)
-                    # 	errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-                    # 	plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-                    # }
                     
                     plot[["status"]] <- "complete"
                     

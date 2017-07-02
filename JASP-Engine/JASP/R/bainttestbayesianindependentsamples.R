@@ -374,26 +374,44 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 	bf.type <- options$bayesFactorType
 
-    if (bf.type == "LogBF10") {
-
-	    BFH1H0 <- TRUE
-
-	    bf.title <- "Log(BF equal vs - )"
-
-	} else if (bf.type == "BF01") {
-
-	    BFH1H0 <- FALSE
-
-	   bf.title <- "BF equal vs -"
+	if(options$hypothesis == "biggerSmaller"){
+	    
+	    if (bf.type == "LogBF10") {
+	        
+	        BFH1H0 <- TRUE
+	        
+	        bf.title <- "Log(BF bigger vs - )"
+	        
+	    } else if (bf.type == "BF01") {
+	        
+	        BFH1H0 <- FALSE
+	        
+	        bf.title <- "BF bigger vs - "
+	    }
+	    
+	} else {
+	    
+	    if (bf.type == "LogBF10") {
+	        
+	        BFH1H0 <- TRUE
+	        
+	        bf.title <- "Log(BF equal vs - )"
+	        
+	    } else if (bf.type == "BF01") {
+	        
+	        BFH1H0 <- FALSE
+	        
+	        bf.title <- "BF equal vs - "
+	    }
 	    
 	}
-
 
 	# Make the fields for the t-test table
 
 	if (options$hypothesis == "groupsNotEqual" |
 	    options$hypothesis == "groupOneGreater" |
-	    options$hypothesis == 'groupTwoGreater') {
+	    options$hypothesis == 'groupTwoGreater' | 
+	    options$hypothesis == "biggerSmaller") {
 
 
 	    fields <- list(
@@ -459,6 +477,13 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 	   message <- paste("For all tests, H\u2081: group ", g1, " > group ", g2, " and H\u2082: group ", g1, " < group ", g2, " are compared to H\u2080: group ", g1, " = group ", g2, sep = "")
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
+	} else if (options$hypothesis == "biggerSmaller"){
+	    
+	    type <- 4
+	    
+	    note <- paste("For all tests, H\u2080: group ", g1," > group ", g2," is tested against H\u2081: group ", g1, " < group ", g2, sep = "")
+	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
+	    
 	} else if (options$hypothesis == "groupsNotEqual"){
 
 	    type <- 1
@@ -504,6 +529,10 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 					if(options$hypothesis == "groupOneGreater"){
 					    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
 					    "hypothesis[type2]" = "Smaller", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
+					}
+					if(options$hypothesis == "biggerSmaller"){
+					    result_test <-list(Variable=variable, "hypothesis[type1]" = "Bigger", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
+					                       "hypothesis[type2]" = "Smaller", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					}
 					if(options$hypothesis == "allTypes"){
 					    result_test <-list(Variable=variable,
@@ -592,6 +621,10 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 					        result_test <-list(Variable=variable, "hypothesis[type1]" = "mu1 = mu2", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
 					        "hypothesis[type2]" = "Smaller", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
 					    }
+					    if(options$hypothesis == "biggerSmaller"){
+					        result_test <-list(Variable=variable, "hypothesis[type1]" = "Bigger", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
+					                           "hypothesis[type2]" = "Smaller", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = list(BF=list(index2)))
+					    }
 					    if(options$hypothesis == "allTypes"){
 					        result_test <-list(Variable=variable,
 					                           "type[greater]" = "Equal",
@@ -645,6 +678,10 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 				        if(options$hypothesis == "groupOneGreater"){
 				            result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
 				            "hypothesis[type2]" = "Smaller", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = row.footnotes)
+				        }
+				        if(options$hypothesis == "biggerSmaller"){
+				            result_test <-list(Variable=variable, "hypothesis[type1]" = "Bigger", "BF[type1]"= .clean(NaN), "pmp[type2]" = .clean(NaN),
+				                               "hypothesis[type2]" = "Smaller", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = row.footnotes)
 				        }
 				        if(options$hypothesis == "allTypes"){
 				            result_test <-list(Variable=variable,
@@ -719,6 +756,17 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						    
 						    PMP_0 <- r$PMP_0
 						    PMP_1 <- r$PMP_1
+						} else if (type == 4){
+						    
+						    if(makeLog){
+						        BF_12 <- log(r$BF_12)
+						    } else {
+						        BF_12 <- r$BF_12
+						    }
+						    
+						    PMP_1 <- r$PMP_1
+						    PMP_2 <- r$PMP_2
+						    
 						} else if (type == 5) {
 						    
 						    if(makeLog){
@@ -750,6 +798,10 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 						if(options$hypothesis == "groupOneGreater"){
 						    result_test <-list(Variable=variable, "hypothesis[type1]" = "Equal", "BF[type1]"= .clean(BF_01), "pmp[type1]" = .clean(PMP_0),
 						                       "hypothesis[type2]" = "Bigger", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_1))
+						}
+						if(options$hypothesis == "biggerSmaller"){
+						    result_test <-list(Variable=variable, "hypothesis[type1]" = "Bigger", "BF[type1]"=.clean(BF_12), "pmp[type1]" = .clean(PMP_1),
+						                       "hypothesis[type2]" = "Smaller", "BF[type2]" = "", "pmp[type2]" = .clean(PMP_2)) 
 						}
 						if(options$hypothesis == "allTypes"){
 						    result_test <-list(Variable=variable,

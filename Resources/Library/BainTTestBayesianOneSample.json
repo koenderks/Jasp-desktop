@@ -9,7 +9,7 @@
 		},
 		{
 			"name": "hypothesis",
-            "options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue", "allTypes" ],
+            "options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue", "biggerSmaller", "allTypes" ],
 			"default": "notEqualToTestValue",
 			"type": "List"
 		},

@@ -107,6 +107,13 @@
               </property>
              </widget>
             </item>
+            <item row="4" column="0">
+             <widget class="QRadioButton" name="_5allTypes">
+              <property name="text">
+               <string>Equal vs Bigger vs Smaller</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2oneTailedGreaterThan">
               <property name="sizePolicy">
@@ -134,9 +141,9 @@
              </spacer>
             </item>
             <item row="3" column="0">
-             <widget class="QRadioButton" name="allTypes">
+             <widget class="QRadioButton" name="_4biggerSmaller">
               <property name="text">
-               <string>Equal vs Bigger vs Smaller</string>
+               <string>Bigger vs Smaller</string>
               </property>
              </widget>
             </item>
