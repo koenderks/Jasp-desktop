@@ -765,7 +765,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
 
-	else if (name == "BainTTestBayesianOneSample")
+    else if (name == "BainTTestBayesianOneSample")
 		form = new BainTTestBayesianOneSampleForm(contentArea);
 	else if (name == "BainTTestBayesianIndependentSamples")
 		form = new BainTTestBayesianIndependentSamplesForm(contentArea);
@@ -919,7 +919,7 @@ void MainWindow::tabChanged(int index)
 		{
 			ui->ribbon->setCurrentIndex(3);
 		}
-		else if(currentActiveTab == "Bain")
+        else if(currentActiveTab == "BaIn")
 		{
 			ui->ribbon->setCurrentIndex(4);
 		}
@@ -1301,9 +1301,9 @@ void MainWindow::updateUIFromOptions()
 
 	QVariant bain = _settings.value("toolboxes/bain", false);
 	if (bain.canConvert(QVariant::Bool) && bain.toBool())
-		ui->tabBar->addTab("Bain");
+        ui->tabBar->addTab("BaIn");
 	else
-		ui->tabBar->removeTab("Bain");
+        ui->tabBar->removeTab("BaIn");
 }
 
 void MainWindow::resultsPageLoaded(bool success)

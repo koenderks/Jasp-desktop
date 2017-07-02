@@ -460,35 +460,35 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 	    type <- 3
 
-		message <- paste("For all tests, H\u2080: group ", g1," = group ", g2, " is tested against H\u2081: group ", g1, " < group ", g2, sep = "")
+		message <- paste("For all tests, H\u2080: group ", g1," = group ", g2, " is tested against H\u2081: group ", g1, " < group ", g2, ".", sep = "")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "groupTwoGreater") {
 
 	    type <- 2
 
-		message <- paste("For all tests, H\u2080: group ", g1, " = group ", g2, " is tested against H\u2081: group ", g1, " > group ", g2, sep = "")
+		message <- paste("For all tests, H\u2080: group ", g1, " = group ", g2, " is tested against H\u2081: group ", g1, " > group ", g2, ".", sep = "")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "allTypes"){
 
 	    type <- 5
 
-	   message <- paste("For all tests, H\u2081: group ", g1, " > group ", g2, " and H\u2082: group ", g1, " < group ", g2, " are compared to H\u2080: group ", g1, " = group ", g2, sep = "")
+	   message <- paste("For all tests, H\u2081: group ", g1, " > group ", g2, " and H\u2082: group ", g1, " < group ", g2, " are compared to H\u2080: group ", g1, " = group ", g2, ".", sep = "")
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "biggerSmaller"){
 	    
 	    type <- 4
 	    
-	    note <- paste("For all tests, H\u2080: group ", g1," > group ", g2," is tested against H\u2081: group ", g1, " < group ", g2, sep = "")
+	    note <- paste("For all tests, H\u2080: group ", g1," > group ", g2," is tested against H\u2081: group ", g1, " < group ", g2, ".", sep = "")
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
 	    
 	} else if (options$hypothesis == "groupsNotEqual"){
 
 	    type <- 1
 
-	    message <- paste("For all tests, H\u2080: group ", g1, " = group ", g2, " is tested against H\u2081: group ", g1, " \u2260 group ", g2, sep = "")
+	    message <- paste("For all tests, H\u2080: group ", g1, " = group ", g2, " is tested against H\u2081: group ", g1, " \u2260 group ", g2, ".", sep = "")
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	}

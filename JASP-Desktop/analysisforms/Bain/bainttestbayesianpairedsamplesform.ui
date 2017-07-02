@@ -194,7 +194,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Log( BF₀₁ )</string>
+               <string>Log(BF₀₁)</string>
               </property>
              </widget>
             </item>
