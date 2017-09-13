@@ -42,6 +42,7 @@
 
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/regressionlinearbayesianform.h"
+#include "analysisforms/regressionlogisticform.h"
 #include "analysisforms/regressionloglinearform.h"
 #include "analysisforms/regressionloglinearbayesianform.h"
 #include "analysisforms/correlationform.h"
@@ -718,6 +719,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new RegressionLinearForm(contentArea);
 	else if (name == "RegressionLinearBayesian")
 		form = new RegressionLinearBayesianForm(contentArea);
+	else if (name == "RegressionLogistic")
+		form = new RegressionLogisticForm(contentArea);
 	else if (name == "RegressionLogLinear")
 		form = new RegressionLogLinearForm(contentArea);
 	else if (name == "RegressionLogLinearBayesian")
@@ -1151,6 +1154,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{
+			_analyses->clear();
 			closeCurrentOptionsWidget();
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
@@ -1164,6 +1168,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if (_applicationExiting)
 				QApplication::exit();
+			
+			
 		}
 		else
 		{
@@ -1182,9 +1188,6 @@ void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
 	ui->variablesPage->setDataSet(_package->dataSet);
-
-
-	_analyses->clear();
 
 	ui->tableView->adjustAfterDataLoad(true);
 
