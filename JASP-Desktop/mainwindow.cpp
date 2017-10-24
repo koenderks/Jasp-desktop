@@ -71,6 +71,17 @@
 #include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
 #include "analysisforms/MetaAnalysis/multinomialtestform.h"
 
+#ifdef QT_DEBUG
+#include "analysisforms/Bain/bainancovabayesianform.h"
+#include "analysisforms/Bain/bainanovabayesianform.h"
+#include "analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.h"
+#include "analysisforms/Bain/baincorrelationbayesianform.h"
+#include "analysisforms/Bain/bainregressionlinearbayesianform.h"
+#include "analysisforms/Bain/bainttestbayesianindependentsamplesform.h"
+#include "analysisforms/Bain/bainttestbayesianonesampleform.h"
+#include "analysisforms/Bain/bainttestbayesianpairedsamplesform.h"
+#endif
+
 ///// 1-analyses headers
 
 #include <QDebug>
@@ -158,6 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(false);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(false);
+	ui->ribbonBain->setDataSetLoaded(false);
 ///// 2-ribbon setDataSetLoaded
 
 #ifdef QT_DEBUG
@@ -205,6 +217,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonBain, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 ///// 3-connect ribbon itemSelected
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
@@ -388,7 +401,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		event->accept();
 	}
-	
+
 	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
 	if (rd) rd->close();
 }
@@ -797,6 +810,22 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
+	else if (name == "BainTTestBayesianOneSample")
+		form = new BainTTestBayesianOneSampleForm(contentArea);
+	else if (name == "BainTTestBayesianIndependentSamples")
+		form = new BainTTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "BainTTestBayesianPairedSamples")
+		form = new BainTTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "BainAncovaBayesian")
+		form = new BainAncovaBayesianForm(contentArea);
+	else if (name == "BainAnovaBayesian")
+		form = new BainAnovaBayesianForm(contentArea);
+	else if (name == "BainAnovaRepeatedMeasuresBayesian")
+		form = new BainAnovaRepeatedMeasuresBayesianForm(contentArea);
+	else if (name == "BainCorrelationBayesian")
+		form = new BainCorrelationBayesianForm(contentArea);
+	else if (name == "BainRegressionLinearBayesian")
+		form = new BainRegressionLinearBayesianForm(contentArea);
 #endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
@@ -884,6 +913,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 	if (_currentAnalysis != NULL)
 	{
+		QString currentModuleName = QString::fromStdString(_currentAnalysis->module());
+		ui->tabBar->setCurrentTab(currentModuleName);
 		showForm(_currentAnalysis);
 
 		QString info("%1,%2");
@@ -1046,6 +1077,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 		_loader.io(event, _package);
 		_progressIndicator->show();
+
 	}
 	else if (event->operation() == FileEvent::FileExportData)
 	{
@@ -1301,6 +1333,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
+	ui->ribbonBain->setDataSetLoaded(loaded);
 ///// 5-ribbon updateMenuEnabledDisabledStatus
 }
 
@@ -1734,6 +1767,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 	if (selected)
 		hideOptionsPanel();
+	checkUsedModules();
 }
 
 

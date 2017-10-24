@@ -9,10 +9,11 @@ map<QString, Module> Module::AllModules = {
 #ifndef __linux__
 	{"SEM", Module("SEM", 1)},
 #endif
-	{ "ReinforcementLearning", Module("ReinforcementLearning", "Reinforcement Learning", 2, false)},
+	{"ReinforcementLearning", Module("ReinforcementLearning", "Reinforcement Learning", 2, false)},
 	{"SummaryStats", Module("SummaryStats", "Summary Stats", 3)},
 	{"MetaAnalysis", Module("MetaAnalysis", "Meta Analysis", 4)},
 	{"Network", Module("Network", 5)},
+	{"BAIN", Module("BAIN", 6)},
 ///// ribbon tab number: 6
 };
 
