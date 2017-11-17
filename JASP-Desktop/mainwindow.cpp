@@ -77,10 +77,10 @@
 #include "analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.h"
 #include "analysisforms/Bain/baincorrelationbayesianform.h"
 #include "analysisforms/Bain/bainregressionlinearbayesianform.h"
+#endif
 #include "analysisforms/Bain/bainttestbayesianindependentsamplesform.h"
 #include "analysisforms/Bain/bainttestbayesianonesampleform.h"
-#include "analysisforms/Bain/bainttestbayesianpairedsamplesform.h"
-#endif
+#include "analysisforms/Bain/bainttestbayesianpairedsamplesform.h
 
 ///// 1-analyses headers
 
@@ -807,15 +807,15 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
 	else if (name == "ClassicalMetaAnalysis")
 		form = new ClassicalMetaAnalysisForm(contentArea);
-#ifdef QT_DEBUG
-	else if (name == "BASRegressionLinearLink")
-		form = new BASRegressionLinearLinkForm(contentArea);
 	else if (name == "BainTTestBayesianOneSample")
 		form = new BainTTestBayesianOneSampleForm(contentArea);
 	else if (name == "BainTTestBayesianIndependentSamples")
 		form = new BainTTestBayesianIndependentSamplesForm(contentArea);
 	else if (name == "BainTTestBayesianPairedSamples")
 		form = new BainTTestBayesianPairedSamplesForm(contentArea);
+#ifdef QT_DEBUG
+	else if (name == "BASRegressionLinearLink")
+		form = new BASRegressionLinearLinkForm(contentArea);
 	else if (name == "BainAncovaBayesian")
 		form = new BainAncovaBayesianForm(contentArea);
 	else if (name == "BainAnovaBayesian")
