@@ -69,6 +69,17 @@
 #include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
 
 
+#ifdef QT_DEBUG
+#include "analysisforms/Bain/bainancovabayesianform.h"
+#include "analysisforms/Bain/bainanovabayesianform.h"
+#include "analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.h"
+#include "analysisforms/Bain/baincorrelationbayesianform.h"
+#include "analysisforms/Bain/bainregressionlinearbayesianform.h"
+#endif
+#include "analysisforms/Bain/bainttestbayesianindependentsamplesform.h"
+#include "analysisforms/Bain/bainttestbayesianonesampleform.h"
+#include "analysisforms/Bain/bainttestbayesianpairedsamplesform.h"
+
 ///// 1-analyses headers
 
 #include <QDebug>
@@ -161,6 +172,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(false);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(false);
+	ui->ribbonBain->setDataSetLoaded(false);
 ///// 2-ribbon setDataSetLoaded
 
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
@@ -213,6 +225,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics,		QOverload<QString>::of(&RibbonSummaryStatistics::itemSelected),		this, &MainWindow::itemSelected);
 	connect(ui->ribbonMetaAnalysis,				QOverload<QString>::of(&RibbonMetaAnalysis::itemSelected),			this, &MainWindow::itemSelected);
 	connect(ui->ribbonNetworkAnalysis,			QOverload<QString>::of(&RibbonNetworkAnalysis::itemSelected),		this, &MainWindow::itemSelected);
+    connect(ui->ribbonBain,                     QOverload<QString>::of(&RibbonBain::itemSelected),                  this, &MainWindow::itemSelected);
 
 	connect(ui->backStage,						&BackStageWidget::dataSetIORequest,			this, &MainWindow::dataSetIORequest);
 	connect(ui->backStage,						&BackStageWidget::exportSelected, _resultsJsInterface, &ResultsJsInterface::exportSelected);
@@ -822,6 +835,24 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
 	else if (name == "ClassicalMetaAnalysis")
 		form = new ClassicalMetaAnalysisForm(contentArea);
+	else if (name == "BainTTestBayesianOneSample")
+		form = new BainTTestBayesianOneSampleForm(contentArea);
+	else if (name == "BainTTestBayesianIndependentSamples")
+		form = new BainTTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "BainTTestBayesianPairedSamples")
+		form = new BainTTestBayesianPairedSamplesForm(contentArea);
+#ifdef QT_DEBUG
+	else if (name == "BainAncovaBayesian")
+		form = new BainAncovaBayesianForm(contentArea);
+	else if (name == "BainAnovaBayesian")
+		form = new BainAnovaBayesianForm(contentArea);
+	else if (name == "BainAnovaRepeatedMeasuresBayesian")
+		form = new BainAnovaRepeatedMeasuresBayesianForm(contentArea);
+	else if (name == "BainCorrelationBayesian")
+		form = new BainCorrelationBayesianForm(contentArea);
+	else if (name == "BainRegressionLinearBayesian")
+		form = new BainRegressionLinearBayesianForm(contentArea);
+#endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
 	else if (name == "ReinforcementLearningR11tLearning")
@@ -910,6 +941,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 	if (_currentAnalysis != NULL)
 	{
+		QString currentModuleName = QString::fromStdString(_currentAnalysis->module());
+		ui->tabBar->setCurrentTab(currentModuleName);
 		showForm(_currentAnalysis);
 		ui->tabBar->setCurrentTab(QString::fromStdString(_currentAnalysis->module()));
 		
@@ -1362,6 +1395,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
+	ui->ribbonBain->setDataSetLoaded(loaded);
 ///// 5-ribbon updateMenuEnabledDisabledStatus
 }
 
