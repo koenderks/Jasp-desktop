@@ -458,7 +458,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = p, obj = TRUE)
 
 								plot[["convertible"]] <- TRUE
-								# plot[["editable"]] <- TRUE
+								plot[["editable"]] <- TRUE
 								plot[["obj"]] <- content[["obj"]]
 								plot[["data"]] <- content[["png"]]
 

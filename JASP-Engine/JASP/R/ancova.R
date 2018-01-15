@@ -21,7 +21,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors),unlist(options$repeatedMeasures))
 	factor.variables <- factor.variables[factor.variables != ""]
-  
+
 	if (is.null(dataset)) {
 
 		if (perform == "run") {
@@ -121,12 +121,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			stateMarginalMeans <- state$stateMarginalMeans
 
 		}
-		
+
 		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE &&
 		    diff[['simpleFactor']] == FALSE && diff[['moderatorFactorOne']] == FALSE && diff[['moderatorFactorTwo']] == FALSE) {
-		  
+
 		  # old simple effects tables can be used
-		  
+
 		  stateSimpleEffects <- state$stateSimpleEffects
 
 		}
@@ -278,14 +278,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 	## Create Simple Effects Table
-	
+
 	if (is.null(stateSimpleEffects)) {
 
 	  result <- .anovaSimpleEffects(dataset, options, perform, results[["anova"]], status, singular, stateSimpleEffects)
 	  results[["simpleEffects"]] <- result$result
 	  status <- result$status
 	  stateSimpleEffects <- result$stateSimpleEffects
-	 
+
 	} else {
 
 	  results[["simpleEffects"]] <- stateSimpleEffects
@@ -401,11 +401,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateDunn"]] <- stateDunn
 	
 	if (perform == "init" && status$ready && status$error == FALSE) {
-	  
+
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 
 	} else {
-	  
+
 		return(list(results=results, status="complete", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 	}
 }
@@ -480,7 +480,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:n.levels-1) {
 			contr[c(1,i+1),i]<- c(1,-1)
 		}
-		
+
 		contr <- contr * -1
 
 	} else if (contrast.type == "simple") {
@@ -504,9 +504,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	} else if (contrast.type == "difference") {
 
 		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
-		
+
 		for (i in 1:(n.levels - 1)) {
-		  
+
 		  k <- 1 / (i +1)
 		  contr[1:(i+1),i] <- c( rep(-k, i), k * i)
 		}
@@ -1118,10 +1118,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		if (options$postHocTestEffectSize) {
 		  fields[[length(fields) + 1]] <- list(name="Cohen's d", title="Cohen's d", type="number", format="sf:4;dp:3")
-		  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", 
+		  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>",
 		                                            text="Cohen's d does not correct for multiple comparisons."))
 		}
-		
+
 		if (options$postHocTestsTukey)
 			fields[[length(fields) + 1]] <- list(name="tukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001")
 
@@ -1185,7 +1185,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				pBonf <- ""
 				pHolm <- ""
 				effectSize <- ""
-				
+
 
 				if (!is.null(statePostHoc[[posthoc.var]])) {
 
@@ -1447,14 +1447,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		#r <- car::leveneTest(levene.formula, dataset, center = "mean")
 		r <- summary(aov(levene.formula, dataset))
 		error <- base::tryCatch(summary(aov(levene.formula, dataset)),error=function(e) e, warning=function(w) w)
-		
+
 		if (!is.null(error$message) && error$message == "ANOVA F-tests on an essentially perfect fit are unreliable") {
 
 			errorMessage <- "F-value equal to zero indicating perfect fit.<br><br>(Levene's tests on an essentially perfect fit are unreliable)"
 			levenes.table[["error"]] <- list(error="badData", errorMessage = errorMessage)
 
 		}
-		
+
 		if (options$VovkSellkeMPR){
 		  levenes.table[["data"]] <- list(list("F"=.clean(r[[1]]$`F value`[1]), "df1"=r[[1]]$Df[1], "df2"=r[[1]]$Df[2], "p"=.clean(r[[1]]$`Pr(>F)`[1]), "VovkSellkeMPR"=.VovkSellkeMPR(r[[1]]$`Pr(>F)`[1]), ".isNewGroup"=TRUE))
 		} else {
@@ -1675,19 +1675,19 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
     return (list(result=NULL, status=status))
-  
-  
+
+
   terms <- c(options$moderatorFactorOne,options$moderatorFactorTwo)
   terms.base64 <- c()
   terms.normal <- c()
   simpleFactor.base64 <- .v(options$simpleFactor)
-  
+
   for (term in terms) {
-    
+
     components <- unlist(term)
     term.base64 <- paste(.v(components), collapse=":", sep="")
     term.normal <- paste(components, collapse=" \u273B ", sep="")
-    
+
     terms.base64 <- c(terms.base64, term.base64)
     terms.normal <- c(terms.normal, term.normal)
   }
@@ -1702,17 +1702,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     list(name="MeanSquare", type="number", format="sf:4;dp:3", title = "Mean Square"),
     list(name="F", type="number", format="sf:4;dp:3", title = "F"),
     list(name="p", type="number", format="dp:3;p:.001", title = "p"))
-  
+
   if (identical(options$moderatorFactorTwo, ""))
     fields <- fields[-2]
-  
+
   footnotes <- .newFootnotes()
-  
+
   simpleEffectsTable[["schema"]] <- list(fields=fields)
 
-  
+
   tableCounter <- 1
-  fullAnovaMS <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$`Mean Square` 
+  fullAnovaMS <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$`Mean Square`
   fullAnovaDf <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$df
   simpleEffectRows <- list()
   rows <- list()
@@ -1728,10 +1728,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     lvls[[variable]] <- levels(factor)
   }
   if (perform == "run" && status$ready && status$error == FALSE)  {
-  
+
     for (level in lvls[[1]]) {
       # For each level of the first moderator factor, take a subset of the dataset, and adjust the options object
-      # Suboptions is the same as options, except that the first moderator factor has been removed as a predictor 
+      # Suboptions is the same as options, except that the first moderator factor has been removed as a predictor
       # (because each subset only has one level of that factor). The same procedure is applied to the second moderator, if specified.
       subDataset <- subset(dataset, dataset[terms.base64[1]] == level)
       subOptions <- options
@@ -1756,7 +1756,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             F <- MS / fullAnovaMS
             p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
             row <- list("ModOne"=level, "SumSquares"=SS, "df"=df, "MeanSquare"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
-            
+
         }
         simpleEffectRows[[length(simpleEffectRows) + 1]] <- row
       } else {
@@ -1785,30 +1785,30 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             simpleEffectRows[[length(simpleEffectRows) + 1]] <- row
           }
       }
-   
-      
+
+
     }
-    
+
     simpleEffectsTable[["data"]] <- simpleEffectRows
-    
+
   } else {
 
     simpleEffectsTable[["data"]]  <- list(list("ModOne"=terms.normal, "SumSquares"=".", "df"=".", "MeanSquare"=".", "F"=".", "p"=".", ".isNewGroup" = TRUE))
   }
-  
+
   simpleEffectsTable[["footnotes"]] <- as.list(footnotes)
   simpleEffectsTable[["status"]] <- "complete"
-    
+
   if (perform == "run" && status$ready && status$error == FALSE)  {
-    
+
     stateSimpleEffects <- simpleEffectsTable
-    
+
   } else {
-    
+
     stateSimpleEffects <- NULL
-    
+
   }
-  
+
   list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
 }
 
@@ -2165,7 +2165,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 									   plot = p, obj = TRUE)
 
 			}
-			
+
 			descriptivesPlot[["data"]] <- content[["png"]]
 			descriptivesPlot[["obj"]] <- content[["obj"]]
 			descriptivesPlot[["convertible"]] <- TRUE
@@ -2231,7 +2231,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .qqPlot <- function(model, options, perform, status, stateqqPlot) {
-
+    
 	if (!options$qqPlot)
 		return(list(result=NULL, status=status))
 
@@ -2240,27 +2240,61 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
 
 		qqPlot$title <- "Q-Q Plot"
+		
+		# Hardcode plot dimensions
+		options$plotWidthQQPlot <- 530
+		options$plotHeightQQPlot <- 400
+		
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
-		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
+		#qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
 
 		standResid <- as.data.frame(stats::qqnorm(rstandard(model), plot.it=FALSE))
 
-		p <- ggplot2::ggplot(standResid, ggplot2::aes(x=x,y=y)) + ggplot2::geom_point(na.rm = TRUE) +
-			 ggplot2::geom_abline(slope = 1) + ggplot2::xlab("Theoretical Quantiles") + ggplot2::ylab("Standardized Residuals") +
-			 ggplot2::ggtitle("") + ggplot2::theme_bw() +
-				ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-					panel.grid.major=ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black", size=1.2),
-					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=1.2),
-					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					panel.border = ggplot2::element_blank(),
-					axis.ticks = ggplot2::element_line(size = 0.5),
-					axis.ticks.margin = grid::unit(1,"mm"),
-					axis.ticks.length = grid::unit(3, "mm"),
-					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
+		standResid <- na.omit(standResid)
+		xVar <- standResid$x
+		yVar <- standResid$y
 
+		# Format x ticks
+		xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+		xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+		xticks <- pretty(c(xlow, xhigh))
+		
+		# format x labels
+		xLabs <- vector("character", length(xticks))
+		for (i in seq_along(xticks)) {
+			if (xticks[i] < 10^6) {
+				xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
+			} else {
+				xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
+			}
+		}
+
+		# Format y ticks
+		ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)))
+		yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)))        
+		yticks <- pretty(c(ylow, yhigh))
+		
+		# format y labels
+		yLabs <- vector("character", length(yticks))
+		for (i in seq_along(yticks)) {
+		    if (yticks[i] < 10^6) {
+		        yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+		    } else {
+		        yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		    }
+		}
+		
+		p <- JASPgraphs::drawAxis(xName = "\nTheoretical Quantiles", yName = "Standardized Residuals\n", xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
+	    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
+		p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
+		
+		# JASP theme
+	    p <- JASPgraphs::themeJasp(p)
+		
+		# Excel theme
+		p <- p + ggthemes::theme_excel(p)
+		
 		content <- .writeImage(width = options$plotWidthQQPlot,
 									   height = options$plotHeightQQPlot,
 									   plot = p, obj = TRUE)
@@ -2275,9 +2309,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	} else {
 
 		qqPlot$title <- "Q-Q Plot"
+		
+		# Hardcode plot dimensions
+		options$plotWidthQQPlot <- 530
+		options$plotHeightQQPlot <- 400
+		
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
-		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
+		#qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
 		qqPlot$data <- NULL
 
 		stateqqPlot <- NULL
