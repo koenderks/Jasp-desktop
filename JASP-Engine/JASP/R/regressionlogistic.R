@@ -52,18 +52,6 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
                          exitAnalysisIfErrors = TRUE)
   }
 
-  if (length(options[["covariates"]]) != 0) {
-    errors <- .hasErrors(dataset, perform,
-                         type = c("observations", "infinity", "variance"),
-                         all.target = options[["covariates"]],
-                         observations.amount = "< 2",
-                         exitAnalysisIfErrors = TRUE)
-  }
-
-  if (perform == "run" && nrow(dataset) == 0) {
-    .quitAnalysis("Dataset has no observations, check for missing values!")
-  }
-
   # STATE SYSTEM
   # load state
   state <- .retrieveState()
@@ -169,7 +157,6 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run",
   if (is.null(lrObj)) {
     lrObj <- .jaspGlm(dataset, options, perform, type = "binomial")
   }
-
 
   if (is.null(modelSummary)) {
     modelSummary <- .glmModelSummary(lrObj, options, perform, type = "binomial")

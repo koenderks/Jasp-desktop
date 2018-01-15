@@ -2185,6 +2185,7 @@ as.list.footnotes <- function(footnotes) {
 	} else {
 		print(plot)
 	}
+	
 	dev.off()
 
 	# Save path & plot object to output
