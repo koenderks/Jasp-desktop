@@ -22,6 +22,7 @@
 #include "qutils.h"
 #include "appinfo.h"
 
+
 AboutDialog::AboutDialog(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::AboutDialog)
