@@ -2189,7 +2189,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			plot <- list()
 
 			plot[["title"]] <- "Q-Q Plot Standardized Residuals"
-			plot[["width"]]  <- 530
+			plot[["width"]]  <- 400
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
 
@@ -2198,7 +2198,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			# plot[["data"]] <- .endSaveImage(image)
 
 			p <- .plotQQresidualsRegression(dontPlotData=TRUE)
-			content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
+			content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
 
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
@@ -3365,7 +3365,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     dfYr <- data.frame(x = Inf, xend = Inf, y = stAxisOriginalScale[1],
                        yend = stAxisOriginalScale[length(stAxisOriginalScale)])
 					   
-	p <- JASPgraphs::drawAxis(xName = paste0("\n",xlab), yName = paste0(ylab,"\n"), xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE,
+	p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE,
 		secondaryYaxis = ggplot2::sec_axis(~.+0, breaks = stAxisOriginalScale, name = "Standardized Residuals\n",labels = stAxis))
     p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(0, 0)), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
 	p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
@@ -3402,7 +3402,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     ylow <- 0
     xticks <- base::pretty(c(res, h$breaks), min.n= 3)
 
-	p <- JASPgraphs::drawAxis(xName = paste0("\n",resName), yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
+	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
     p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
                                 binwidth = (h$breaks[2] - h$breaks[1]),
                                 fill = "grey",
@@ -3458,7 +3458,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
         }
     }
 
-	p <- JASPgraphs::drawAxis(xName = "\nTheoretical Quantiles", yName = "Standardized Residuals\n", xBreaks = xticks, yBreaks = xticks, force = TRUE)
+	p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, force = TRUE)
 	p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
 	p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
 	

@@ -276,6 +276,7 @@ themeJaspRaw = function(legend.position = "none",
         panel.background = ggplot2::element_rect(color = "white", fill = "white"),
         
         # plot
+        plot.background = ggplot2::element_rect(fill = "transparent"),
         plot.margin = ggplot2::unit(c(1, 1, 1, 1), "cm"),
         plot.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5) # center title
     )

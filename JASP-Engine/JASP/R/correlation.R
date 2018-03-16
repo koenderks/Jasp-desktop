@@ -470,8 +470,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       width <- 400
       height <- 400
     } else {
-      width <- 250 * l
-      height <- 250 * l
+      width <- 250 * l + 20
+      height <- 250 * l + 20
     }
 
     plot <- list()
@@ -590,9 +590,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
                                     plotList[[length(plotList)+1]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
                                                   pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
-                                                  if(col == 1){
-                                                      plotList[[length(plotList)]] <- plotList[[length(plotList)]] + ggplot2::annotate("text", x = 0, y = 1.5, label = .unv(variables)[row], angle = 90, size = 6, fontface = 2)
-                                                  }
+                                                  # if(col == 1){
+                                                  #     plotList[[length(plotList)]] <- plotList[[length(plotList)]] + ggplot2::annotate("text", x = 0, y = 1.5, label = .unv(variables)[row], angle = 90, size = 6, fontface = 2)
+                                                  # }
                                 } else {
                                     errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
                                     errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
@@ -781,19 +781,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 
     p <- ggplot2::ggplot(data = data.frame(), ggplot2::aes(x = seq_along(data.frame()),y = summary(data.frame()))) +
+        ggplot2::theme_void() +
         ggplot2::theme(
-            panel.border = ggplot2::element_blank(),
-            panel.grid.major = ggplot2::element_blank(),
-            panel.grid.minor = ggplot2::element_blank(),
-            panel.background = ggplot2::element_blank(),
-            axis.line = ggplot2::element_blank(),
-            axis.ticks.y = ggplot2::element_blank(),
-            axis.ticks.x = ggplot2::element_blank(),
-            axis.text.y = ggplot2::element_blank(),
-            plot.margin = grid::unit(c(1,1,1,1), "cm"),
-            axis.text.x =ggplot2::element_blank(),
-            axis.title = ggplot2::element_blank()) +
-        ggplot2::xlim(0,2) + ggplot2::ylim(0,2)
+            plot.margin = grid::unit(c(1,1,1,1), "cm")
+            ) + ggplot2::xlim(0,2) + ggplot2::ylim(0,2)
 
     lab <- vector("list")
     

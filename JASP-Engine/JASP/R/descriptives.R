@@ -1938,7 +1938,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     ylow <- 0
     xticks <- base::pretty(c(variable, h$breaks), min.n= 3)
     
-    p <- JASPgraphs::drawAxis(xName = paste0("\n",variableName), yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
+    p <- JASPgraphs::drawAxis(xName = variableName, yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
     p <- p + ggplot2::geom_histogram(data = data.frame(variable), mapping = ggplot2::aes(x = variable, y = ..density..),
             binwidth = (h$breaks[2] - h$breaks[1]),
             fill = "grey",

@@ -2242,7 +2242,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		qqPlot$title <- "Q-Q Plot"
 		
 		# Hardcode plot dimensions
-		options$plotWidthQQPlot <- 530
+		options$plotWidthQQPlot <- 400
 		options$plotHeightQQPlot <- 400
 		
 		qqPlot$width <- options$plotWidthQQPlot
@@ -2285,15 +2285,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		    }
 		}
 		
-		p <- JASPgraphs::drawAxis(xName = "\nTheoretical Quantiles", yName = "Standardized Residuals\n", xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
+		p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
 	    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
 		p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
 		
 		# JASP theme
 	    p <- JASPgraphs::themeJasp(p)
-		
-		# Excel theme
-		p <- p + ggthemes::theme_excel(p)
 		
 		content <- .writeImage(width = options$plotWidthQQPlot,
 									   height = options$plotHeightQQPlot,
@@ -2311,7 +2308,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		qqPlot$title <- "Q-Q Plot"
 		
 		# Hardcode plot dimensions
-		options$plotWidthQQPlot <- 530
+		options$plotWidthQQPlot <- 400
 		options$plotHeightQQPlot <- 400
 		
 		qqPlot$width <- options$plotWidthQQPlot

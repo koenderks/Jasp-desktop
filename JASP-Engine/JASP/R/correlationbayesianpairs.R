@@ -1040,7 +1040,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
         }
     }
 
-    p <- JASPgraphs::drawAxis(xName = paste0("\n",xlab), yName = paste0(ylab,"\n"), xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
+    p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
     p <- JASPgraphs::drawPoints(p, dat = d, size = 3)
     p <- .poly.pred(fit[[bestModel]], plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd = 1)    
 

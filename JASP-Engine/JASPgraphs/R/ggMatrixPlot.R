@@ -74,14 +74,14 @@ replicateOrStop <- function(x, n) {
 }
 
 #' @export
-makeLabels <- function(label, angle = 0, size = 1, family = "serif") {
+makeLabels <- function(label, angle = 0, size = 1, family = graphOptions("family")) {
     
     UseMethod("makeLabels", label)
     
 }
 
 #' @export
-makeLabels.default <- function(label, angle = 0, size = 1, family = "serif") {
+makeLabels.default <- function(label, angle = 0, size = 1, family = graphOptions("family")) {
     
     if (is.null(label))
         return(NULL)
@@ -101,16 +101,25 @@ makeLabels.default <- function(label, angle = 0, size = 1, family = "serif") {
     }
     
     # should inherit current theme from graphOptions
-    return(
-        ggplot2::ggplot(df, aes(x, y, label = label)) +
-            ggplot2::geom_text(angle = angle, size = size, family = family, parse = parse) +
-            ggplot2::theme_void() + 
-            ggplot2::theme(plot.background = ggplot2::element_rect(fill = "transparent"))
-    )
+    if (!is.null(family)) {
+        return(
+            ggplot2::ggplot(df, aes(x, y, label = label)) +
+                ggplot2::geom_text(angle = angle, size = size, family = family, parse = parse) +
+                ggplot2::theme_void() + 
+                ggplot2::theme(plot.background = ggplot2::element_rect(fill = "transparent"))
+        )
+    } else {
+        return(
+            ggplot2::ggplot(df, aes(x, y, label = label)) +
+                ggplot2::geom_text(angle = angle, size = size, parse = parse) +
+                ggplot2::theme_void() + 
+                ggplot2::theme(plot.background = ggplot2::element_rect(fill = "transparent"))
+        )
+    }
 }
 
 #' @export
-makeLabels.list <- function(label, angle = 0, size = 1, family = "serif") {
+makeLabels.list <- function(label, angle = 0, size = 1, family = graphOptions("family")) {
     
     nLabels <- length(label)
     angle <- replicateOrStop(angle, nLabels)
@@ -152,12 +161,13 @@ modifyAxesLabels <- function(removeXYlabels, plotList) {
     }
     
     # actually remove labels
-    mrg <- -0.1
+    mrg <- 0
+    mrgLR <- .05
     x <- ggplot2::xlab("")
-    xt <- ggplot2::theme(plot.margin = ggplot2::margin(b = mrg, r = mrg, unit = "cm"))
+    xt <- ggplot2::theme(plot.margin = ggplot2::margin(b = mrg, r = mrgLR, unit = "cm"))
     y <- ggplot2::ylab("")
-    yt <- ggplot2::theme(plot.margin = ggplot2::margin(l = mrg, r = mrg, unit = "cm"))
-    xyt <- ggplot2::theme(plot.margin = ggplot2::margin(b = mrg, l = mrg, r = mrg, t = mrg, unit = "cm"))
+    yt <- ggplot2::theme(plot.margin = ggplot2::margin(l = mrgLR, r = mrgLR, unit = "cm"))
+    xyt <- ggplot2::theme(plot.margin = ggplot2::margin(b = mrg, l = mrgLR, r = mrgLR, t = mrg, unit = "cm"))
     transp <- NULL
     
     for (i in seq_along(plotList)) {
@@ -173,6 +183,99 @@ modifyAxesLabels <- function(removeXYlabels, plotList) {
     
 }
 
+getAxesLabels <- function(g) {
+    
+    axesLabels <- try({
+        filename <- tempfile()
+        png(filename = filename)
+        grobs <- ggplot2::ggplotGrob(g)
+        dev.off()
+        if(file.exists(filename))
+            file.remove(filename)
+        
+        i1 <- which(grobs[["layout"]][["name"]] == "xlab-t")
+        i2 <- which(grobs[["layout"]][["name"]] == "xlab-b")
+        i3 <- which(grobs[["layout"]][["name"]] == "ylab-l")
+        i4 <- which(grobs[["layout"]][["name"]] == "ylab-r")
+        grobs
+        
+        list(
+            xtop = grobs[["grobs"]][[i1]][["children"]][[1]][["label"]],
+            xbottom = grobs[["grobs"]][[i2]][["children"]][[1]][["label"]],
+            yleft = grobs[["grobs"]][[i3]][["children"]][[1]][["label"]],
+            yright = grobs[["grobs"]][[i4]][["children"]][[1]][["label"]]
+        )
+    })
+    
+    if (inherits(axesLabels, "try-error")) {
+        warning("JASPgraphs could not obtain axes labels from graph")
+        return(list(xtop = NULL, xbottom = NULL, yleft = NULL, yright = NULL))
+    } else {
+        return(axesLabels)
+    }
+        
+}
+
+scaleAxesLabels <- function(scaleXYlabels, plotList) {
+    
+    # Error handling
+    if (!is.numeric(scaleXYlabels) || !(all(scaleXYlabels > 0)) || !(all(scaleXYlabels < 1)))
+        stop("removeXYlabels must be numeric, larger than 0 and smaller than 1")
+        
+        d1 <- dim(plotList)
+        if (is.matrix(scaleXYlabels)) {
+            d0 <- dim(scaleXYlabels)
+            if (!all(d0[1] == prod(d1))) {
+                stop(sprintf("dim(removeXYlabels)[1] does not match prod(dim(plotList)) / layout. Got (%d, %d) and expected: prod(%d, %d).",
+                             d0[1], d0[2], d1[1], d1[2]))
+            }
+        } else {
+            if (!(length(scaleXYlabels) == 2 || length(plotList)))
+                stop("removeXYlabels should either have length 2 or length(plotList).")
+            
+            scaleXYlabels <- matrix(scaleXYlabels, nrow = prod(d1), ncol = 2, byrow = TRUE)
+        }
+
+        fontsize <- graphOptions("fontsize")
+        fam <- graphOptions("family")
+        for (i in seq_along(plotList)) {
+            
+            axesLabels <- getAxesLabels(plotList[[i]])
+            c1 <- !(is.null(axesLabels$xbottom) || identical(axesLabels$xbottom, "")) # are there x-axes labels ? 
+            c2 <- !(is.null(axesLabels$yleft) || identical(axesLabels$yleft, "")) # are there y-axes labels ? 
+            
+            if(c1 && c2) {
+            
+            plotList[[i]] <- plotList[[i]] + 
+                ggplot2::theme(
+                    axis.title.x = ggplot2::element_text(family = fam, margin = ggplot2::margin(t = 10),
+                                                         size = scaleXYlabels[i, 1]*fontsize),
+                    axis.title.y = ggplot2::element_text(family = fam, margin = ggplot2::margin(r = 10),
+                                                         size = scaleXYlabels[i, 2]*fontsize)
+                )
+            
+            } else if (c1){
+                
+                plotList[[i]] <- plotList[[i]] + 
+                    ggplot2::theme(
+                        axis.title.x = ggplot2::element_text(family = fam, margin = ggplot2::margin(t = 10),
+                                                             size = scaleXYlabels[i, 1]*fontsize))
+                
+            } else if (c2){
+                
+                plotList[[i]] <- plotList[[i]] + 
+                    ggplot2::theme(
+                        axis.title.y = ggplot2::element_text(family = fam, margin = ggplot2::margin(r = 10),
+                                                             size = scaleXYlabels[i, 2]*fontsize)
+                    ) 
+                
+            }
+        }
+        
+        return (plotList)    
+}
+
+
 #' @export
 ggMatrixPlot <- function(plotList = NULL, nr = NULL, nc = NULL,
                          ...,
@@ -181,7 +284,8 @@ ggMatrixPlot <- function(plotList = NULL, nr = NULL, nc = NULL,
                          rightLabels = NULL,
                          bottomLabels = NULL,
                          removeXYlabels = c("xy", "x", "y", "none"),
-                         labelSize = .5*graphOptions("fontsize"),
+                         labelSize = .4*graphOptions("fontsize"),
+                         scaleXYlabels = c(.9,.9),
                          debug = FALSE) {
     UseMethod("ggMatrixPlot", plotList)
 }
@@ -195,7 +299,8 @@ ggMatrixPlot.matrix <- function(plotList = NULL, nr = NULL, nc = NULL,
                                 rightLabels = NULL,
                                 bottomLabels = NULL,
                                 removeXYlabels = c("xy", "x", "y", "none"),
-                                labelSize = .5*graphOptions("fontsize"),
+                                labelSize = .4*graphOptions("fontsize"),
+                                scaleXYlabels = c(.9,.9),
                                 debug = FALSE) {
     
     # dim cannot be NULL since plotList is a matrix
@@ -237,7 +342,8 @@ ggMatrixPlot.list <- function(plotList = NULL, nr = NULL, nc = NULL,
                               rightLabels = NULL,
                               bottomLabels = NULL,
                               removeXYlabels = c("xy", "x", "y", "none"),
-                              labelSize = .5*graphOptions("fontsize"),
+                              labelSize = .4*graphOptions("fontsize"),
+                              scaleXYlabels = c(.9,.9),
                               debug = FALSE) {
     if (is.null(layout)) { # was layout supplied?
         stop("Either supply plotList as a matrix or provide a layout argument")
@@ -282,7 +388,8 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
                                  rightLabels = NULL,
                                  bottomLabels = NULL,
                                  removeXYlabels = c("xy", "x", "y", "none"),
-                                 labelSize = .5*graphOptions("fontsize"),
+                                 labelSize = .4*graphOptions("fontsize"),
+                                 scaleXYlabels = c(.9,.9),
                                  debug = FALSE) {
     
     removeXYlabels <- match.arg(removeXYlabels)
@@ -302,6 +409,9 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
         
     }
     plotList <- modifyAxesLabels(removeXYlabels, plotList)
+    if(!isTRUE(all.equal(scaleXYlabels, c(1,1)))){
+        plotList <- scaleAxesLabels(scaleXYlabels, plotList)
+    }
     
     # ugly artefact of the lazy vectorization with lapply in makeLabels
     if (nr == 1) {
