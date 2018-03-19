@@ -2627,7 +2627,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							# plot[["data"]] <- .endSaveImage(image)
 
 							p <- .plotQQresidualsRegression(res=resSt)
-							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
+							content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
 
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
@@ -2648,7 +2648,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						# plot[["data"]] <- .endSaveImage(image)
 
 						p <- .plotQQresidualsRegression(dontPlotData=TRUE)
-						content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
+						content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
 
 						plot[["convertible"]] <- TRUE
 						plot[["obj"]] <- content[["obj"]]
