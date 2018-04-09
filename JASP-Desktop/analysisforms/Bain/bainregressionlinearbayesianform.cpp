@@ -54,6 +54,21 @@ BainRegressionLinearBayesianForm::BainRegressionLinearBayesianForm(QWidget *pare
 	itemSelectModel->setSource(&_availableVariablesModel);
 
 	ui->model_constraints->hide();
+
+#ifndef JASP_DEBUG
+    ui->bayesFactorType->hide();
+    ui->descriptives->hide();
+    ui->CredibleInterval->hide();
+    ui->label_2->hide();
+    ui->label_3->hide();
+#else
+    ui->bayesFactorType->setStyleSheet("background-color: pink;");
+    ui->descriptives->setStyleSheet("background-color: pink;");
+    ui->CredibleInterval->setStyleSheet("background-color: pink;");
+    ui->label_2->setStyleSheet("background-color: pink;");
+    ui->label_3->setStyleSheet("background-color: pink;");
+#endif
+
 }
 
 BainRegressionLinearBayesianForm::~BainRegressionLinearBayesianForm()

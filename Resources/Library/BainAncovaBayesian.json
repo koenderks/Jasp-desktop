@@ -23,7 +23,7 @@
 			"name": "bayesFactorType",
 			"type": "List",
             "options": [ "BF01", "BF10" ],
-            "default": "BF01"
+            "default": "BF10"
         },
         {
             "name": "logScale",
@@ -57,6 +57,14 @@
 			"name": "plotHeight",
 			"type": "Integer",
 			"default": 320
+		},
+		{
+			"name": "plotDescriptives",
+			"type": "Boolean"
+		},
+		{
+			"name": "coefficients",
+			"type": "Boolean"
 		}
 	]
 }

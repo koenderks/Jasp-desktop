@@ -23,7 +23,20 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item row="4" column="0">
+   <item row="6" column="0">
+    <spacer name="verticalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="0">
     <widget class="QWidget" name="constraintsWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_10">
       <property name="leftMargin">
@@ -36,6 +49,13 @@
        <number>3</number>
       </property>
       <item row="2" column="0">
+       <widget class="ExpanderButton" name="constraintsExpander">
+        <property name="text">
+         <string>Model Constraints</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
        <widget class="QWidget" name="model_constraints" native="true">
         <layout class="QGridLayout" name="gridLayout_15">
          <property name="leftMargin">
@@ -54,13 +74,6 @@
           <widget class="BoundTextEdit" name="model"/>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="constraintsExpander">
-        <property name="text">
-         <string>Model Constraints</string>
-        </property>
        </widget>
       </item>
      </layout>
@@ -152,6 +165,13 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="plotDescriptives">
+           <property name="text">
+            <string>Descriptives plot</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -227,27 +247,6 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="widget_11" native="true">
-     <layout class="QGridLayout" name="gridLayout_6">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="verticalSpacing">
-       <number>0</number>
-      </property>
-     </layout>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
@@ -269,8 +268,40 @@
       <property name="verticalSpacing">
        <number>3</number>
       </property>
-      <item row="7" column="1">
-       <spacer name="verticalSpacer_2">
+      <item row="0" column="0" rowspan="8">
+       <widget class="AvailableFieldsListView" name="listAvailableFields">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>210</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Dependent Variable</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -281,38 +312,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Dependent Variable</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="AssignButton" name="buttonAssignDependent">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>50</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
       </item>
       <item row="1" column="2">
        <widget class="boundSingleItemView" name="dependent">
@@ -339,44 +338,6 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="0" rowspan="8">
-       <widget class="AvailableFieldsListView" name="listAvailableFields">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>210</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="2">
        <widget class="QLabel" name="label_2">
         <property name="text">
@@ -384,33 +345,33 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="2" rowspan="2">
-       <widget class="BoundListView" name="fixedFactors">
+      <item row="5" column="1">
+       <widget class="AssignButton" name="buttonAssignFixed">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>0</width>
-          <height>80</height>
+          <width>50</width>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>80</height>
+          <width>50</width>
+          <height>16777215</height>
          </size>
         </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="AssignButton" name="buttonAssignFixed">
+      <item row="1" column="1">
+       <widget class="AssignButton" name="buttonAssignDependent">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -447,21 +408,111 @@
         </property>
        </spacer>
       </item>
+      <item row="5" column="2" rowspan="2">
+       <widget class="boundSingleItemView" name="fixedFactors">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </widget>
    </item>
-   <item row="5" column="0">
-    <spacer name="verticalSpacer_4">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+   <item row="3" column="0">
+    <widget class="QWidget" name="widget_11" native="true">
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="BoundGroupBox" name="groupBox">
+     <property name="title">
+      <string/>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>If the groups are numbered, e.g, 1, 2, 3, and 4, than m1 refers to the mean of Group 1, m2 to the mean of Group 2, etc.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>to the mean of the brown group, m2 to the mean of green group and m3 to the mean of the red group.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>In the help file it is elaborated how the m1, m2, etc. can be used to specify informative hypotheses after clicking the model</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>If the groups are named, e.g., red, brown, and, green, than they are put in alphabetical order, that is, m1 refers to </string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>constraints button, e.g., m1 = m2 = m3; m1 &gt; m2 &gt; m3; specifies two competing hypotheses.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -507,11 +558,6 @@
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
    <header>widgets/availablefieldslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>
