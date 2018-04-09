@@ -57,7 +57,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 	meta[[4]] <- list(name = 'descriptivesPlots', type = "collection", meta = "image")
 
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian Informative Hypothesis T-Test"
+	results[["title"]] <- "Bayesian Informative T-Test"
 
 
 	state <- .retrieveState()
@@ -367,7 +367,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 	ttest <- list()
 
-	ttest[["title"]] <- "Bayesian Informative Hypothesis Independent Samples T-Test"
+	ttest[["title"]] <- "Bayesian Informative Independent Samples T-Test"
 
 	ttest[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
@@ -448,32 +448,32 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 
 	if (options$hypothesis == "groupOneGreater") {
 
-	    type <- 3
-		message <- "For all tests, the alternative hypothesis specifies that mean of group 1 is bigger than the mean of group 2. The posterior probabilities are based on equal prior probabilities."
+	    type <- 2
+		message <- "The alternative hypothesis H2 specifies that mean of group 1 is bigger than the mean of group 2. The posterior probabilities are based on equal prior probabilities."
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "groupTwoGreater") {
 
-	    type <- 2
-		message <- "For all tests, the alternative hypothesis specifies that the mean of group 1 is smaller than the mean of group 2. The posterior probabilities are based on equal prior probabilities."
+	    type <- 3
+		message <- "The alternative hypothesis H1 specifies that the mean of group 1 is smaller than the mean of group 2. The posterior probabilities are based on equal prior probabilities."
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "allTypes"){
 
 	    type <- 5
-	    message <- "For all tests, the null hypothesis with equal group means is tested against the other hypotheses. The posterior probabilities are based on equal prior probabilities."
+	    message <- "The null hypothesis H0 with equal group means is tested against the other hypotheses. The posterior probabilities are based on equal prior probabilities."
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "groupsNotEqual"){
 
 	    type <- 1
-	    message <- "For all tests, the alternative hypothesis specifies that the mean of group 1 is unequal to the mean of group 2. The posterior probabilities are based on equal prior probabilities."
+	    message <- "The alternative hypothesis H1 specifies that the mean of group 1 is unequal to the mean of group 2. The posterior probabilities are based on equal prior probabilities."
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if(options$hypothesis == "_4type"){
 
 	    type <- 4
-	    message <- "For all tests, the alternative hypothesis specifies that the mean of group 1 is bigger than the mean of group 2. The posterior probabilities are based on equal prior probabilities."
+	    message <- "The null hypothesis H0 specifies that the mean of group 1 is bigger than the mean of group 2. The alternative hypothesis H1 specifies that the mean in group 1 is smaller than the mean in group 2. The posterior probabilities are based on equal prior probabilities."
 	    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	}
@@ -650,7 +650,7 @@ BainTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="
 				        }
 				        if(options$hypothesis == "groupTwoGreater"){
 				            result_test <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"= .clean(NaN), "pmp[type1]" = .clean(NaN),
-				                               "hypothesis[type2]" = "H1: Bigger", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = row.footnotes)
+				                               "hypothesis[type2]" = "H2: Bigger", "BF[type2]" = .clean(NaN), "pmp[type2]" = .clean(NaN),.footnotes = row.footnotes)
 				        }
 				        if(options$hypothesis == "_4type"){
 				            result_test <-list(Variable=variable, "hypothesis[type1]" = "H0: Bigger", "BF[type1]"=.clear(NaN), "pmp[type1]" = .clear(NaN),

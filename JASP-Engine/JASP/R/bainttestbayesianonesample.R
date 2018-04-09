@@ -48,11 +48,11 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     meta[[4]] <- list(name = "descriptivesPlots", type = "collection", meta = "image")
     
     results[[".meta"]] <- meta
-    results[["title"]] <- "Bayesian Informative Hypothesis T-Test"
+    results[["title"]] <- "Bayesian Informative T-Test"
     
     ttest <- list()
     
-    ttest[["title"]] <- "Bayesian Informative Hypothesis One Sample T-Test"
+    ttest[["title"]] <- "Bayesian Informative One Sample T-Test"
     
     ttest[["citation"]] <- list(
         "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
@@ -128,7 +128,7 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     if (options$hypothesis == "notEqualToTestValue"){
         
         type <- 1
-        note <- "For all tests, the alternative hypothesis specifies that the mean is unequal to "
+        note <- "The alternative hypothesis H1 specifies that the mean is unequal to "
         message <- paste0(note, options$testValue, "."," The posterior probabilities are based on equal prior probabilities.")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
@@ -137,27 +137,27 @@ BainTTestBayesianOneSample <- function(dataset=NULL, options, perform="run", cal
     if (options$hypothesis == "greaterThanTestValue") {
         
         type <- 2
-        note <- "For all tests, the alternative hypothesis specifies that the mean of group 1 is bigger than "
+        note <- "The alternative hypothesis H1 specifies that the mean of group 1 is bigger than "
         message <- paste0(note, options$testValue, "."," The posterior probabilities are based on equal prior probabilities.")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
     } else if (options$hypothesis == "lessThanTestValue") {
         
         type <- 3
-        note <- "For all tests, the alternative hypothesis specifies that the mean of group 1 is smaller than "
+        note <- "The alternative hypothesis H1 specifies that the mean of group 1 is smaller than "
         message <- paste0(note, options$testValue, "."," The posterior probabilities are based on equal prior probabilities.")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
     } else if (options$hypothesis == "allTypes"){
         
-        note <- "For all tests, the null hypothesis with with test value "
-        message <- paste0(note, options$testValue, " is tested against the other hypotheses."," The posterior probabilities are based on equal prior probabilities.")
+        note <- "The null hypothesis H0 with test value "
+        message <- paste0(note, options$testValue, " is tested against the other hypotheses. H1 states that the mean is bigger than ", options$testValue," and H2 states that the mean is smaller than ",options$testValue,". The posterior probabilities are based on equal prior probabilities.")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
     } else if(options$hypothesis == "_4type") {
         
         type <- 4
-        message <- paste0("For all tests, the null hypothesis specifies that the mean of group 1 is bigger than ",options$testValue," and the alternative hypothesis specifies that the mean is bigger than ",options$testValue,". The posterior probabilities are based on equal prior probabilities.")
+        message <- paste0("The null hypothesis H0 specifies that the mean of group 1 is bigger than ",options$testValue," and the alternative hypothesis H1 specifies that the mean is smaller than ",options$testValue,". The posterior probabilities are based on equal prior probabilities.")
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
         
     }

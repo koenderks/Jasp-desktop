@@ -70,12 +70,12 @@
 
 
 #ifdef QT_DEBUG
-#include "analysisforms/Bain/bainancovabayesianform.h"
-#include "analysisforms/Bain/bainanovabayesianform.h"
 #include "analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.h"
 #include "analysisforms/Bain/baincorrelationbayesianform.h"
-#include "analysisforms/Bain/bainregressionlinearbayesianform.h"
 #endif
+#include "analysisforms/Bain/bainregressionlinearbayesianform.h"
+#include "analysisforms/Bain/bainancovabayesianform.h"
+#include "analysisforms/Bain/bainanovabayesianform.h"
 #include "analysisforms/Bain/bainttestbayesianindependentsamplesform.h"
 #include "analysisforms/Bain/bainttestbayesianonesampleform.h"
 #include "analysisforms/Bain/bainttestbayesianpairedsamplesform.h"

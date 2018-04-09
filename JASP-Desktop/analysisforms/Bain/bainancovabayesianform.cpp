@@ -61,6 +61,21 @@ BainAncovaBayesianForm::BainAncovaBayesianForm(QWidget *parent) :
 	itemSelectModel->setSource(&_availableVariablesModel);
 
 	ui->model_constraints->hide();
+
+#ifndef JASP_DEBUG
+    ui->bayesFactorType->hide();
+    ui->CredibleInterval->hide();
+    ui->descriptives->hide();
+    ui->label_6->hide();
+    ui->label_7->hide();
+#else
+    ui->bayesFactorType->setStyleSheet("background-color: pink;");
+    ui->CredibleInterval->setStyleSheet("background-color: pink;");
+    ui->descriptives->setStyleSheet("background-color: pink;");
+    ui->label_6->setStyleSheet("background-color: pink;");
+    ui->label_7->setStyleSheet("background-color: pink;");
+#endif
+
 }
 
 BainAncovaBayesianForm::~BainAncovaBayesianForm()

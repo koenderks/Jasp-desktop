@@ -17,10 +17,6 @@
 
 BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform = "run", callback = function(...) list(status = "ok"), ...) {
 	
-## TODO: ADD state
-## TODO: GET CONSTRAINTS WORKING
-## TODO: Fix H0 & H1 in init state Bayes factor matrix
-	
 ## SPECIFY VARIABLES
 	bain.variables <- c(unlist(options$dependent),unlist(options$covariates)[1],unlist(options$fixedFactors))
 	bain.variables <- bain.variables[bain.variables != ""]
@@ -36,13 +32,17 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 	  bainResult = c("dependent", "fixedFactors", "covariates", "bayesFactorType"),
 	  BFmatrix = c("dependent", "fixedFactors", "covariates", "bayesFactorType"),
 	  descriptives = c("dependent", "fixedFactors", "covariates", "descriptives"),
-	  BFplot = c("dependent", "fixedFactors", "covariates", "BFplot")
+	  coefficients = c("dependent", "fixedFactors", "covariates", "coefficients"),
+	  BFplot = c("dependent", "fixedFactors", "covariates", "BFplot"),
+	  plotDescriptives = c("dependent", "fixedFactors", "plotDescriptives")
 	)
 	
 	bainResult <- state$bainResult
 	BFmatrix <- state$BFmatrix
 	descriptives <- state$descriptives
 	BFplot <- state$BFplot
+	coefficients <- state$coefficients
+	plotDescriptives <- state$plotDescriptives
 
 ## READ IN DATA
 	if (is.null(dataset)) {
@@ -59,9 +59,9 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 
 ## LABEL ADJUSTMENT
 	if (options$bayesFactorType == "BF10") {      
-        bf.title <- "BF\u2081\u2080"        
+        bf.title <- "BF.c"        
     } else if (options$bayesFactorType == "BF01") {               
-        bf.title <- "BF\u2080\u2081"        
+        bf.title <- "BFc."        
     }
     
     if(options$logScale == "logBF"){
@@ -74,12 +74,14 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 	meta[[2]] <- list (name = "bainResult", type = "table")
 	meta[[3]] <- list(name = "BFmatrix", type = "table")
 	meta[[4]] <- list(name = "descriptives", type = "table")
-	meta[[5]] <- list(name="BFplot", type="image")
+	meta[[5]] <- list(name = "coefficients", type = "table")
+	meta[[6]] <- list(name="BFplot", type="image")
+	meta[[7]] <- list(name = "plotDescriptives", type = "image")
 
 ## RESULTS
 	results <- list ()
 	results [[".meta"]] <- meta
-	results [["title"]] <- "Bain ANCOVA"
+	results [["title"]] <- "Bayesian Informative ANCOVA"
 
 ## BAIN ANALYSIS	
 	result <- .bainANCOVATable(dataset, options, bain.variables, bf.title, perform)
@@ -98,15 +100,28 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
         results[["descriptives"]] <- .bainANCOVADescriptivesTable(dataset, options, bain.variables, factor.variables, all.variables, perform)
     }
 	
+## COEFFICIENTS	
+	if (options$coefficients) {    
+        results[["coefficients"]] <- .bainCoefficients(dataset, bainAnalysis, options, bain.variables, factor.variables, all.variables, perform)
+    }
+	
 ## PLOT
 	if(options$BFplot){
 		results[["BFplot"]] <- .bainANCOVAPlot(options, bainAnalysis, run)
 	}
 	
+## DESCRIPTIVES Plot
+	if(options$plotDescriptives){
+		results[["plotDescriptives"]] <- .bainDescriptivesPlot(dataset, options, perform)
+	}
+
 ## KEEP THE PLOTS
 	keep <- NULL
 	  if (! is.null(names(BFplot)) && "data" %in% names(BFplot)) {
 		keep <- BFplot$data
+	  }
+	  if (! is.null(names(plotDescriptives)) && "data" %in% names(plotDescriptives)) {
+		keep <- c(keep, plotDescriptives$data)
 	  }
 
 	if (perform == "run") {
@@ -116,7 +131,9 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 		  bainResult = results[["bainResult"]],
 		  BFmatrix = results[["BFmatrix"]],
 		  descriptives = result[["descriptives"]],
-		  BFplot = result[["BFplot"]]
+		  coefficients = result[["coefficients"]],
+		  BFplot = result[["BFplot"]],
+		  plotDescriptives = result[["plotDescriptives"]]
 		)
 		attr(state, "key") <- stateKey
 
@@ -149,34 +166,66 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 	bainData <- list()
 	
 	if(perform == "run"){
+		
+		if(length(bain.variables) > 2){
 	
 		if(options$model == ""){
 			
-			ERr1<-matrix(c(1,0,0,0,-1,1,0,0,0,-1,1,0,0,0,-1,1,0,0,0,-1,0,0,0,0),nrow=4,ncol=6)
-			IRr1<-matrix(0,0,0)
-			ERr2<-matrix(0,0,0)
-			IRr2<-matrix(c(-1,0,0,-1,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,-1,0,0,-1,0,0,0,-1,0,0,-1,0,0,0,0,0,0),nrow=6,ncol=6)
-		
-		} else {
-			restrictions <- .restriction.matrices(options$model)
+			# We have to make a default matrix depending on the levels of the grouping variable...meh
+			# The default hypothesis is that all groups are equal (e.g., 3 groups, "p1=p2=p3")
+			groupVars <- options$fixedFactors
+			groupVars <- unlist(groupVars)
 			
-			# for (i in 1:length(restrictions)){
-			# 	assign(paste0("ER", i), restrictions[[i]][[1]]
-			# 	assign(paste0("IR", i), restrictions[[i]][[2]]
-			# }
+			groupCol <- dataset[ , .v(groupVars)]
+			varLevels <- levels(groupCol)
 			
-			ER1 <- restrictions[[1]][[1]]
-			IR1 <- restrictions[[1]][[2]]
-			ER2 <- restrictions[[2]][[1]]
-			IR2 <- restrictions[[2]][[2]]
-		}
-		
-		if(length(bain.variables) > 2){
-		
+			len <- length(varLevels)
+			
+			null.mat <- matrix(0, nrow = (len-1), ncol = (len+1))
+			indexes <- row(null.mat) - col(null.mat)
+			null.mat[indexes == 0] <- 1
+			null.mat[indexes == -1] <- -1
+			
+			ERr <- null.mat
+		    IRr<-NULL
+			
 			p <- try(silent= FALSE, expr= {
-				res <- Bain::Bain_ancova(X = dataset, dep_var = dependent, covariates = covariates, group = group, ERr1, IRr1, ERr2, IRr2)
+				res <- Bain::Bain_ancova(X = dataset, dep_var = dependent, covariates = covariates, group = group, ERr, IRr)
 				run <- TRUE
 			})
+		
+		} else {
+			
+			rest.string <- options$model
+
+			rest.string <- gsub("\n", ";", rest.string)
+			restrictions <- .restriction.matrices(rest.string)
+
+			lisst <- list()
+			if(grepl(";", rest.string)){
+			    for (i in 1:length(restrictions[[1]])){
+			        lisst[[length(lisst)+1]] <- assign(paste0("ER", i), restrictions[[1]][[i]])
+			        lisst[[length(lisst)+1]] <-assign(paste0("IR", i), restrictions[[2]][[i]])
+			    }
+			} else {
+			        lisst[[length(lisst)+1]] <- assign("ER", restrictions[[1]][[1]])
+			        lisst[[length(lisst)+1]] <-assign("IR", restrictions[[2]][[1]])
+			    }
+	
+			inpt <- list()
+			inpt[[1]] <- dataset
+			inpt[[2]] <- dependent
+			inpt[[3]] <- covariates
+			inpt[[4]] <- group
+			inpt <- c(inpt, lisst)
+			
+			p <- try(silent= FALSE, expr= {
+				res <- do.call(Bain::Bain_ancova, inpt)
+				#res <- Bain::Bain_ancova(X = dataset, dep_var = dependent, covariates = covariates, group = group, ERr1, IRr1, ERr2, IRr2)
+				run <- TRUE
+			})
+			
+		}
 			
 			if (class(p) == "try-error") {
 				bainData[[1]] <- list(hypotheses = "H1", BF = ".", PMP1 = ".", PMP2 = ".")
@@ -224,12 +273,12 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 	bainResult[["data"]] <- bainData
 	
 	if(run == "error"){
-		bainResult[["error"]] <- list(errorType = "badData", errorMessage = "Error in the analysis")
+		bainResult[["error"]] <- list(errorType = "badData", errorMessage = "Please correctly identify your constraints.")
 	}
 	
 	# FOOTNOTES
 	footnotes <- .newFootnotes()
-	message <- "PMP a indicates posterior probability for each hypothesis excluding unconstrained hypothesis. PMP b indicates posterior probability for each hypothesis including unconstrained hypothesis."
+	message <- "BF.c denotes the Bayes factor of the hypothesis in the row versus its complement. PMP a indicates posterior probability for each hypothesis excluding unconstrained hypothesis. PMP b indicates posterior probability for each hypothesis including unconstrained hypothesis."
 	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	bainResult[["footnotes"]] <- as.list(footnotes)
 	
@@ -311,7 +360,7 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 	descriptives[["title"]] <- "Descriptives"
 	
 	fields <- list(
-		list(name="v",    title="",   type="string"),
+		list(name="v",    title="Level",   type="string"),
 		list(name="N",    title="N",  type="integer"),
 		list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
 		list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
@@ -330,11 +379,18 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 	result <- list()
 	
 	if(perform == "run"){
-		if(length(all.variables) >= 1){
+		if(length(all.variables) > 1){
 			
-			for(variable in all.variables){
+			groupVars <- options$fixedFactors
+			groupVars <- unlist(groupVars)
+			
+			groupCol <- dataset[ , .v(groupVars)]
+			varLevels <- levels(groupCol)
+			
+			for(variable in varLevels){
 				
-				column <- dataset[, .v(variable) ]
+				column <- dataset[ , .v(options$dependent)]
+				column <- column[which(groupCol == variable)]
 				
 				if(variable != factor.variables){
 					
@@ -642,4 +698,101 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
     
     #return(list(resultsEQ,resultsIQ))
     return(list(resultsEQ,resultsIQ))
+}
+
+.bainCoefficients <- function(dataset, bainAnalysis, options, bain.variables, factor.variables, all.variables, perform){
+	
+	coefficientsComplete <- FALSE
+	
+	coefficients <- list()
+	
+	coefficients[["title"]] <- "Coefficients for Groups plus Covariates"
+	
+	overTitle = "95% Credible Interval"
+	
+	fields <- list(
+		list(name="v",    title="Covariate",   type="string"),
+		list(name="N", title = "N", type = "integer"),
+		list(name="mean", title="Coefficient", type="number", format="sf:4;dp:3"),
+		list(name = "SE", title = "SE", type = "number", format = "sf:4;dp:3"),
+		list(name = "CiLower", title = "CiLower", type = "number", format = "sf:4;dp:3", overTitle = overTitle),
+		list(name = "CiUpper", title = "CiUpper", type = "number", format = "sf:4;dp:3", overTitle = overTitle))
+	
+	coefficients[["schema"]] <- list(fields=fields)
+			
+	result <- list()
+	
+	if(perform == "run"){
+		if(!is.null(bainAnalysis)){
+			
+			sum_model <- bainAnalysis$estimate_res
+			covcoef <- data.frame(sum_model$coefficients)
+			SEs <- summary(sum_model)$coefficients[, 2]
+			
+			# Fix for stupid code...
+			rownames(covcoef) <- gsub("groupf", "", rownames(covcoef))
+			x <- rownames(covcoef)
+			x <- sapply(regmatches(x, gregexpr("covars", x)), length)
+			x <- sum(x)
+			
+			if(x > 1){
+			    rownames(covcoef)[(length(rownames(covcoef)) - (x-1)):length(rownames(covcoef))] <- options$covariates
+			} else {
+			    rownames(covcoef) <- gsub("covars", options$covariates, rownames(covcoef))
+			}
+			# mucho
+			
+			groups <- rownames(covcoef)
+			estim <- covcoef[, 1]
+			CiLower <- estim - 1.96 * SEs
+			CiUpper <- estim + 1.96 * SEs
+			
+			groupVars <- options$fixedFactors
+			groupVars <- unlist(groupVars)	
+			groupCol <- dataset[ , .v(groupVars)]
+			varLevels <- levels(groupCol)
+			
+			N <- NULL
+			
+			for(variable in varLevels){
+				
+				column <- dataset[ , .v(options$dependent)]
+				column <- column[which(groupCol == variable)]
+				
+				N <- c(N,length(column))
+				
+			}
+			
+			covVars <- options$covariates
+			covVars <- unlist(covVars)
+			
+			for(var in covVars){
+				
+				col <- dataset[ , .v(var)]
+				col <- na.omit(col)
+				N <- c(N, length(col))
+				
+			}
+			
+			
+			for(i in 1:length(groups)){
+				result[[length(result) + 1]] <- list(v = groups[i], mean = .clean(estim[i]), N = N[i], SE = .clean(SEs[i]), CiLower = .clean(CiLower[i]), CiUpper = .clean(CiUpper[i]))	
+			}
+			
+		} else {
+			result[[length(result) + 1]] <- list(v = ".", mean = ".", N = ".", SE = ".", CiLower = ".", CiUpper = ".")	
+		}
+	} else {
+		result[[length(result) + 1]] <- list(v = ".", mean = ".", N = ".", SE = ".", CiLower = ".", CiUpper = ".")	
+	}
+	
+	coefficientsComplete <- TRUE
+	coefficients[["data"]] <- result
+	
+	if (coefficientsComplete){
+		coefficients[["status"]] <- "complete"
+	}
+	
+	return(coefficients)
+	
 }
