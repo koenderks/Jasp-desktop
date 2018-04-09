@@ -26,6 +26,7 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 	  bainResult = c("dependent", "covariates", "bayesFactorType", "standardized"),
 	  BFmatrix = c("dependent", "covariates", "bayesFactorType", "standardized"),
 	  descriptives = c("dependent", "covariates", "descriptives", "standardized"),
+	  coefficients = c("dependent", "covariates", "descriptives", "coefficients"),
 	  BFplot = c("dependent", "covariates", "BFplot", "standardized")
 	)
 		
@@ -33,6 +34,7 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 	BFmatrix <- state$BFmatrix
 	descriptives <- state$descriptives
 	BFplot <- state$BFplot
+	coefficients <- state$coefficients
 
 ## READ IN DATA
 	if (is.null(dataset)) {
@@ -49,9 +51,9 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 
 ## LABEL ADJUSTMENT
 	if (options$bayesFactorType == "BF10") {      
-        bf.title <- "BF\u2081\u2080"        
+        bf.title <- "BF.c"        
     } else if (options$bayesFactorType == "BF01") {               
-        bf.title <- "BF\u2080\u2081"        
+        bf.title <- "BFc."        
     }
     
     if(options$logScale == "logBF"){
@@ -63,13 +65,14 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 	meta[[1]] <- list (name = "title", type = "title")
 	meta[[2]] <- list (name = "bainResult", type = "table")
 	meta[[3]] <- list(name = "BFmatrix", type = "table")
-	meta[[4]] <- list(name = "descriptives", type = "table")
-	meta[[5]] <- list(name="BFplot", type="image")
+	meta[[4]] <- list(name = "coefficients", "type" = "table")
+	meta[[5]] <- list(name = "descriptives", type = "table")
+	meta[[6]] <- list(name="BFplot", type="image")
 
 ## RESULTS
 	results <- list ()
 	results [[".meta"]] <- meta
-	results [["title"]] <- "Bain Linear Regression"
+	results [["title"]] <- "Bayesian Informative Linear Regression"
 	
 ## BAIN ANALYSIS	
 	result <- .bainLinearRegressionTable(dataset, options, bain.variables, bf.title, perform)
@@ -86,6 +89,11 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 ## DESCRIPTIVES	
 	if (options$descriptives) {    
         results[["descriptives"]] <- .bainRegressionDescriptivesTable(dataset, options, bain.variables, perform)
+    }
+	
+## DESCRIPTIVES	
+	if (options$coefficients) {    
+        results[["coefficients"]] <- .bainCoefficientsRegression(dataset, bainAnalysis, options, bain.variables, perform)
     }
 	
 ## PLOT
@@ -106,6 +114,7 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 		  bainResult = results[["bainResult"]],
 		  BFmatrix = results[["BFmatrix"]],
 		  descriptives = results[["descriptives"]],
+		  coefficients = results[["coefficients"]],
 		  BFplot = results[["BFplot"]]
 		)
 		attr(state, "key") <- stateKey
@@ -141,34 +150,68 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 	bainData <- list()
 	
 	if(perform == "run"){
+		
+	if(length(bain.variables) > 1){
 	
 		if(options$model == ""){
 			
-			ERr1<-matrix(c(1,0,0,0,1,0),nrow=2,ncol=3, byrow = TRUE)
-			IRr1<-matrix(0,0,0)
-			ERr2<-matrix(0,0,0)
-			IRr2<-matrix(c(0,1,0,1,-1,0),nrow=2,ncol=3, byrow = TRUE)
-		
-		} else {
-			restrictions <- .restriction.matrices(options$model)
+			# We have to make a default matrix depending on the levels of the grouping variable...meh
+			# The default hypothesis is that all covariates = 0 (e.g., 2 covariates, "p1=p2=0")
+			len <- length(covariates)
 			
-			# for (i in 1:length(restrictions)){
-			# 	assign(paste0("ER", i), restrictions[[i]][[1]]
-			# 	assign(paste0("IR", i), restrictions[[i]][[2]]
-			# }
+			if(len == 1){
+				
+				ERr <- matrix(c(1,0), ncol = 2, byrow = TRUE)
+				
+			} else {
 			
-			ER1 <- restrictions[[1]][[1]]
-			IR1 <- restrictions[[1]][[2]]
-			ER2 <- restrictions[[2]][[1]]
-			IR2 <- restrictions[[2]][[2]]
-		}
-		
-		if(length(bain.variables) > 1){
-		
+			null.mat <- matrix(0, nrow = (len-1), ncol = (len+1))
+			indexes <- row(null.mat) - col(null.mat)
+			null.mat[indexes == 0] <- 1
+			null.mat[indexes == -1] <- -1
+			
+			ERr <- null.mat
+			
+			}
+			
+		    IRr<-NULL
+			
 			p <- try(silent= FALSE, expr= {
-				res <- Bain::Bain_regression(formula = formula, data = dataset, standardize = options$standardized, ERr1, IRr1, ERr2, IRr2)
+				res <- Bain::Bain_regression(formula = formula, data = dataset, standardize = options$standardized, ERr, IRr)
 				run <- TRUE
 			})
+		
+		} else {
+			
+			rest.string <- options$model
+
+			rest.string <- gsub("\n", ";", rest.string)
+			restrictions <- .restriction.matrices(rest.string)
+
+			lisst <- list()
+			if(grepl(";", rest.string)){
+			    for (i in 1:length(restrictions[[1]])){
+			        lisst[[length(lisst)+1]] <- assign(paste0("ER", i), restrictions[[1]][[i]])
+			        lisst[[length(lisst)+1]] <-assign(paste0("IR", i), restrictions[[2]][[i]])
+			    }
+			} else {
+			        lisst[[length(lisst)+1]] <- assign("ER", restrictions[[1]][[1]])
+			        lisst[[length(lisst)+1]] <-assign("IR", restrictions[[2]][[1]])
+			    }
+	
+			inpt <- list()
+			inpt[[1]] <- formula
+			inpt[[2]] <- dataset
+			inpt[[3]] <- options$standardized
+			inpt <- c(inpt, lisst)
+			
+			p <- try(silent= FALSE, expr= {
+				res <- do.call(Bain::Bain_regression, inpt)
+				#res <- Bain::Bain_regression(formula = formula, data = dataset, standardize = options$standardized, ERr1, IRr1, ERr2, IRr2)
+				run <- TRUE
+			})
+			
+		}
 			
 			if (class(p) == "try-error") {
 				bainData[[1]] <- list(hypotheses = "H1", BF = ".", PMP1 = ".", PMP2 = ".")
@@ -216,12 +259,12 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 	bainResult[["data"]] <- bainData
 	
 	if(run == "error"){
-		bainResult[["error"]] <- list(errorType = "badData", errorMessage = "Error in the analysis")
+		bainResult[["error"]] <- list(errorType = "badData", errorMessage = "Please correctly identify your constraints.")
 	}
 	
 	# FOOTNOTES
 	footnotes <- .newFootnotes()
-	message <- "PMP a indicates posterior probability for each hypothesis excluding unconstrained hypothesis. PMP b indicates posterior probability for each hypothesis including unconstrained hypothesis."
+	message <- "BF.c denotes the Bayes factor of the hypothesis in the row versus its complement. PMP a indicates posterior probability for each hypothesis excluding unconstrained hypothesis. PMP b indicates posterior probability for each hypothesis including unconstrained hypothesis."
 	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	bainResult[["footnotes"]] <- as.list(footnotes)
 	
@@ -321,5 +364,79 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 	}
 	
 	return(descriptives)
+	
+}
+
+.bainCoefficientsRegression <- function(dataset, bainAnalysis, options, bain.variables, perform){
+	
+	coefficientsComplete <- FALSE
+	
+	coefficients <- list()
+	
+	coefficients[["title"]] <- "Linear Regression Coefficients"
+	
+	interval <- options$CredibleInterval
+	overTitle <- title <- paste0(interval, "% Credible Interval")
+	
+	fields <- list(
+		list(name="v",    title="Covariate",   type="string"),
+		list(name="mean", title="Coefficient", type="number", format="sf:4;dp:3"),
+		list(name = "SE", title = "SE", type = "number", format="sf:4;dp:3"),
+		list(name = "CiLower", title = "CiLower", type = "number", format="sf:4;dp:3", overTitle = overTitle),
+		list(name = "CiUpper", title = "CiUpper", type = "number", format="sf:4;dp:3", overTitle = overTitle))
+	
+	coefficients[["schema"]] <- list(fields=fields)
+			
+	result <- list()
+	
+	if(perform == "run"){
+		if(!is.null(bainAnalysis)){
+			
+			sum_model <- bainAnalysis$estimate_res
+			
+			if(!options$standardized){
+				
+				covcoef <- data.frame(sum_model$coefficients)
+				
+				groups <- rownames(covcoef)
+				estim <- summary(sum_model)$coefficients[, 1]
+				SE <- summary(sum_model)$coefficients[, 2]
+				CiLower <- estim - (1.96 * SE)
+				CiUpper <- estim + (1.96 * SE)
+			
+		} else {
+			
+			covcoef <- data.frame(sum_model$CIs)
+			groups <- .v(options$covariates)
+			estim <- covcoef[, 2]
+			SE <- sum_model$SEs
+			CiLower <- covcoef[, 1]
+			CiUpper <- covcoef[, 3]
+			
+		}
+			
+			for(i in 1:length(estim)){
+				if(i == 1 && !options$standardized){
+					result[[length(result) + 1]] <- list(v = groups[i], mean = .clean(estim[i]), SE = .clean(SE[i]), CiLower = .clean(CiLower[i]), CiUpper = .clean(CiUpper[i]))
+				} else {
+					result[[length(result) + 1]] <- list(v = .unv(groups[i]), mean = .clean(estim[i]), SE = .clean(SE[i]), CiLower = .clean(CiLower[i]), CiUpper = .clean(CiUpper[i]))
+				}		
+			}
+			
+		} else {
+			result[[length(result) + 1]] <- list(v = ".", mean = ".")	
+		}
+	} else {
+		result[[length(result) + 1]] <- list(v = ".", mean = ".")	
+	}
+	
+	coefficientsComplete <- TRUE
+	coefficients[["data"]] <- result
+	
+	if (coefficientsComplete){
+		coefficients[["status"]] <- "complete"
+	}
+	
+	return(coefficients)
 	
 }

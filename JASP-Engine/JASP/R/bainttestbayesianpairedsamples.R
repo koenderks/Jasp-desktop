@@ -50,7 +50,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
     meta[[4]] <- list(name = "descriptivesPlots", type = "collection", meta = "image")
 
     results[[".meta"]] <- meta
-    results[["title"]] <- "Bayesian Informative Hypothesis T-Test"
+    results[["title"]] <- "Bayesian Informative T-Test"
 
     ttest <- list()
 
@@ -84,23 +84,23 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 
     if (options$hypothesis == "groupsNotEqual") {
         type <- 1
-        note <- "For all tests, the alternative hypothesis specifies that the mean of variable 1 is unequal to the mean of variable 2. The posterior probabilities are based on equal prior probabilities."
+        note <- "The alternative hypothesis H1 specifies that the mean of variable 1 is unequal to the mean of variable 2. The posterior probabilities are based on equal prior probabilities."
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "groupOneGreater") {
         type <- 2
-        note <- "For all tests, the alternative hypothesis specifies that the mean of variable 1 is bigger than the mean of variable 2. The posterior probabilities are based on equal prior probabilities."
+        note <- "The alternative hypothesis H1 specifies that the mean of variable 1 is bigger than the mean of variable 2. The posterior probabilities are based on equal prior probabilities."
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "groupTwoGreater") {
         type <- 3
-        note <- "For all tests, the alternative hypothesis specifies that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities."
+        note <- "The alternative hypothesis H1 specifies that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities."
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "_4type") {
         type <- 4
-        note <- "For all tests, the null hypothesis specifies that the mean of variable 1 is bigger than the mean of variable 2, while the alternative hypothesis specifies that it is smaller. The posterior probabilities are based on equal prior probabilities."
+        note <- "The null hypothesis H0 specifies that the mean of variable 1 is bigger than the mean of variable 2, while the alternative hypothesis H1 specifies that it is smaller. The posterior probabilities are based on equal prior probabilities."
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     } else if (options$hypothesis == "allTypes"){
         type <- 5
-        note <- "The null hypothesis with equal means is tested against the other hypotheses. The posterior probabilities are based on equal prior probabilities."
+        note <- "The null hypothesis H0 with equal means is tested against the other hypotheses. The alternative hypothesis H1 states that the mean of variable 1 is bigger than the mean of variable 2. The alternative hypothesis H2 states that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities."
         .addFootnote(footnotes, symbol="<em>Note.</em>", text=note)
     }
 
@@ -272,7 +272,7 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
         tablePairs[[length(tablePairs)+1]] <- paste(pair, collapse=" - ")
 
         # If only one of pairs is selected
-        if (pair[[1]] == "" || pair[[2]] == "") {
+        if ((pair[[1]] == "" || pair[[2]] == "") || pair[[1]] == pair[[2]]) {
 
             p1 <- ifelse(pair[[1]] != "", pair[[1]], "...")
             p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
@@ -706,6 +706,36 @@ BainTTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run",
 
             descriptives.results[[length(descriptives.results)+1]] <- result
         }
+            
+        for (i in .indices(options$pairs)) {
+
+        pair <- options$pairs[[i]]
+        
+        if (!(pair[[1]] == "" || pair[[2]] == "" || pair[[1]] == pair[[2]])) {
+        
+        subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])))
+        subDataSet <- na.omit(subDataSet)
+
+        c1 <- subDataSet[[ .v(pair[[1]]) ]]
+        c2 <- subDataSet[[ .v(pair[[2]]) ]]
+        
+        currentPair <- paste(pair, collapse=" - ")
+        diff <- c1-c2
+        meandiff <- mean(diff)
+        sd <- sd(diff)        
+        se <- sqrt(var(c1) + var(c2) - (2*cor(c1,c2)*sd(c1)*sd(c2)))/sqrt(length(diff))
+        N <- length(diff)
+        
+        ciLower <- meandiff - 1.96*se
+        ciUpper <- meandiff + 1.96*se
+        
+        result <- list(v=currentPair, N=.clean(N), mean=.clean(meandiff), sd=.clean(sd), se=.clean(se), lowerCI=.clean(ciLower), upperCI=.clean(ciUpper))
+        
+        descriptives.results[[length(descriptives.results)+1]] <- result
+
+        }
+        
+    }
 
         descriptives[["data"]] <- descriptives.results
         descriptives[["status"]] <- "complete"

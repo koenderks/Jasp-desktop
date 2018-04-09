@@ -49,6 +49,12 @@ BainAnovaBayesianForm::BainAnovaBayesianForm(QWidget *parent) :
 
 	ui->model_constraints->hide();
 
+#ifndef JASP_DEBUG
+    ui->bayesFactorType->hide();
+#else
+    ui->bayesFactorType->setStyleSheet("background-color: pink;");
+#endif
+
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
