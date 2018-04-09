@@ -2203,7 +2203,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
-			plot[["editable"]] <- TRUE
+			plot[["editable"]] <- FALSE
 
 			plots.regression[[length(plots.regression)+1]] <- plot
 

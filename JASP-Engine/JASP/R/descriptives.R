@@ -1514,7 +1514,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       plot[["data"]]  <- imgObj[["png"]]
       plot[["obj"]] <- imgObj[["obj"]]
       plot[["convertible"]] <- TRUE
-      plot[["editable"]] <- TRUE
+      plot[["editable"]] <- FALSE
 
       matrix.plot <- plot
 
@@ -1883,27 +1883,9 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     ### Theming & Cleaning
     p <- p + ggplot2::xlab(xlab) +
       ggplot2::ylab(variable) +
-      base_breaks_y(y) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(
-        panel.grid.minor = ggplot2::element_blank(),
-        plot.title = ggplot2::element_text(size = 18),
-        panel.grid.major = ggplot2::element_blank(),
-        axis.title.x = ggplot2::element_text(size = 18, vjust=0.1),
-        axis.title.y = ggplot2::element_text(size = 18, vjust=0.9),
-        axis.text.x = ggplot2::element_text(size = 15),
-        axis.text.y = ggplot2::element_text(size = 15),
-        panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-        plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-        legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-        panel.border = ggplot2::element_blank(),
-        axis.line =  ggplot2::element_blank(),
-        legend.key = ggplot2::element_blank(),
-        axis.ticks = ggplot2::element_line(size = 0.5),
-        axis.ticks.length = grid::unit(3, "mm"),
-        axis.ticks.margin = grid::unit(1,"mm"),
-        plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
-        legend.position = "none")
+      base_breaks_y(y)
+      
+    p <- JASPgraphs::themeJasp(p, legend.position="none")
 
 
     image <- .writeImage(width = options$plotWidth,
