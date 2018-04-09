@@ -29,7 +29,7 @@
 		},
 		{
 			"options": [ "BF01", "BF10" ],
-			"default": "BF01",
+			"default": "BF10",
 			"name": "bayesFactorType",
 			"type": "List"
 		},
@@ -66,6 +66,10 @@
 			"name": "plotHeight",
 			"type": "Integer",
 			"default": 320
+		},
+		{
+			"name": "coefficients",
+			"type": "Boolean"
 		}
 	]
 }

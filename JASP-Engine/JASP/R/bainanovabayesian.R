@@ -16,10 +16,6 @@
 #
 
 BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = "run", callback = function(...) list(status = "ok"), ...) {
-
-## TODO: ADD state
-## TODO: GET CONSTRAINTS WORKING
-## TODO: Fix H0 & H1 in init state Bayes factor matrix
 	
 ## SPECIFY VARIABLES
 	bain.variables <- c(unlist(options$dependent), unlist(options$fixedFactors))
@@ -36,13 +32,15 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 	  bainResult = c("dependent", "fixedFactors", "bayesFactorType"),
 	  BFmatrix = c("dependent", "fixedFactors", "bayesFactorType"),
 	  descriptives = c("dependent", "fixedFactors", "descriptives"),
-	  BFplot = c("dependent", "fixedFactors", "BFplot")
+	  BFplot = c("dependent", "fixedFactors", "BFplot"),
+	  plotDescriptives = c("dependent", "fixedFactors", "plotDescriptives")
 	)
 	
 	bainResult <- state$bainResult
 	BFmatrix <- state$BFmatrix
 	descriptives <- state$descriptives
 	BFplot <- state$BFplot
+	plotDescriptives <- state$plotDescriptives
 
 ## READ IN DATA
 	if (is.null(dataset)) {
@@ -59,9 +57,9 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 
 ## LABEL ADJUSTMENT
 	if (options$bayesFactorType == "BF10") {      
-        bf.title <- "BF\u2081\u2080"        
+        bf.title <- "BF.c"        
     } else if (options$bayesFactorType == "BF01") {               
-        bf.title <- "BF\u2080\u2081"        
+        bf.title <- "BFc."        
     }
     
     if(options$logScale == "logBF"){
@@ -75,11 +73,12 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 	meta[[3]] <- list(name = "BFmatrix", type = "table")
 	meta[[4]] <- list(name = "descriptives", type = "table")
 	meta[[5]] <- list(name="BFplot", type="image")
+	meta[[6]] <- list(name = "plotDescriptives", type = "image")
 
 ## RESULTS
 	results <- list ()
 	results [[".meta"]] <- meta
-	results [["title"]] <- "Bain ANOVA"
+	results [["title"]] <- "Bayesian Informative ANOVA"
 
 ## BAIN ANALYSIS	
 	result <- .bainANOVATable(dataset, options, bain.variables, bf.title, perform)
@@ -98,15 +97,23 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
         results[["descriptives"]] <- .bainANOVADescriptivesTable(dataset, options, bain.variables, factor.variables, all.variables, perform)
     }
 	
-## PLOT
+## BF PLOT
 	if(options$BFplot){
 		results[["BFplot"]] <- .bainANCOVAPlot(options, bainAnalysis, run)
+	}
+	
+## DESCRIPTIVES Plot
+	if(options$plotDescriptives){
+		results[["plotDescriptives"]] <- .bainDescriptivesPlot(dataset, options, perform)
 	}
 	
 ## KEEP THE PLOTS
 	keep <- NULL
 	  if (! is.null(names(BFplot)) && "data" %in% names(BFplot)) {
-		keep <- BFplot$data
+		keep <- c(keep, BFplot$data)
+	  }
+	  if (! is.null(names(plotDescriptives)) && "data" %in% names(plotDescriptives)) {
+		keep <- c(keep, plotDescriptives$data)
 	  }
 
 	if (perform == "run") {
@@ -116,7 +123,8 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 		  bainResult = results[["bainResult"]],
 		  BFmatrix = results[["BFmatrix"]],
 		  descriptives = results[["descriptives"]],
-		  BFplot = results[["BFplot"]]
+		  BFplot = results[["BFplot"]],
+		  plotDescriptives = result[["plotDescriptives"]]
 		)
 		attr(state, "key") <- stateKey
 
@@ -148,34 +156,64 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 	bainData <- list()
 	
 	if(perform == "run"){
+		
+		if(length(bain.variables) > 1){
 	
 		if(options$model == ""){
 			
-			ERr1<-matrix(c(1,0,0,0,-1,1,0,0,0,-1,1,0,0,0,-1,1,0,0,0,-1,0,0,0,0),nrow=4,ncol=6)
-			IRr1<-matrix(0,0,0)	
-			ERr2<-matrix(0,0,0)
-			IRr2<-matrix(c(1,0,0,0,-1,1,0,0,0,-1,1,0,0,0,-1,1,0,0,0,-1,0,0,0,0),nrow=4,ncol=6)
-		
-		} else {
-			restrictions <- .restriction.matrices(options$model)
+			# We have to make a default matrix depending on the levels of the grouping variable...meh
+			# The default hypothesis is that all groups are equal (e.g., 3 groups, "p1=p2=p3")
+			groupVars <- options$fixedFactors
+			groupVars <- unlist(groupVars)
 			
-			# for (i in 1:length(restrictions)){
-			# 	assign(paste0("ER", i), restrictions[[i]][[1]]
-			# 	assign(paste0("IR", i), restrictions[[i]][[2]]
-			# }
+			groupCol <- dataset[ , .v(groupVars)]
+			varLevels <- levels(groupCol)
 			
-			ER1 <- restrictions[[1]][[1]]
-			IR1 <- restrictions[[1]][[2]]
-			ER2 <- restrictions[[2]][[1]]
-			IR2 <- restrictions[[2]][[2]]
-		}
-		
-		if(length(bain.variables) > 1){
-		
+			len <- length(varLevels)
+			
+			null.mat <- matrix(0, nrow = (len-1), ncol = (len+1))
+			indexes <- row(null.mat) - col(null.mat)
+			null.mat[indexes == 0] <- 1
+			null.mat[indexes == -1] <- -1
+			
+			ERr <- null.mat
+		    IRr<-NULL
+			
 			p <- try(silent= FALSE, expr= {
-				res <- Bain::Bain_anova(X = dataset, dep_var = dependent, group = group, ERr1, IRr1, ERr2, IRr2)
+				res <- Bain::Bain_anova(X = dataset, dep_var = dependent, group = group, ERr, IRr)
 				run <- TRUE
 			})
+		
+		} else {
+				
+			rest.string <- options$model
+
+			rest.string <- gsub("\n", ";", rest.string)
+			restrictions <- .restriction.matrices(rest.string)
+
+			lisst <- list()
+			if(grepl(";", rest.string)){
+			    for (i in 1:length(restrictions[[1]])){
+			        lisst[[length(lisst)+1]] <- assign(paste0("ER", i), restrictions[[1]][[i]])
+			        lisst[[length(lisst)+1]] <-assign(paste0("IR", i), restrictions[[2]][[i]])
+			    }
+			} else {
+			        lisst[[length(lisst)+1]] <- assign("ER", restrictions[[1]][[1]])
+			        lisst[[length(lisst)+1]] <-assign("IR", restrictions[[2]][[1]])
+			    }
+	
+			inpt <- list()
+			inpt[[1]] <- dataset
+			inpt[[2]] <- dependent
+			inpt[[3]] <- group
+			inpt <- c(inpt, lisst)
+			
+			p <- try(silent= FALSE, expr= {
+				res <- do.call(Bain::Bain_anova, inpt)
+				#res <- Bain::Bain_anova(X = dataset, dep_var = dependent, group = group, ERr1, IRr1, ERr2, IRr2)
+				run <- TRUE
+			})
+		}
 			
 			if (class(p) == "try-error") {
 				bainData[[1]] <- list(hypotheses = "H1", BF = ".", PMP1 = ".", PMP2 = ".")
@@ -223,12 +261,12 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 	bainResult[["data"]] <- bainData
 	
 	if(run == "error"){
-		bainResult[["error"]] <- list(errorType = "badData", errorMessage = "Error in the analysis")
+		bainResult[["error"]] <- list(errorType = "badData", errorMessage = "Please correctly identify your constraints.")
 	}
 	
 	# FOOTNOTES
 	footnotes <- .newFootnotes()
-	message <- "PMP a indicates posterior probability for each hypothesis excluding unconstrained hypothesis. PMP b indicates posterior probability for each hypothesis including unconstrained hypothesis."
+	message <- "BF.c denotes the Bayes factor of the hypothesis in the row versus its complement. PMP a indicates posterior probability for each hypothesis excluding unconstrained hypothesis. PMP b indicates posterior probability for each hypothesis including unconstrained hypothesis."
 	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	bainResult[["footnotes"]] <- as.list(footnotes)
 	
@@ -244,7 +282,7 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 	descriptives[["title"]] <- "Descriptives"
 	
 	fields <- list(
-		list(name="v",    title="",   type="string"),
+		list(name="v",    title="Level",   type="string"),
 		list(name="N",    title="N",  type="integer"),
 		list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
 		list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
@@ -263,13 +301,18 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 	result <- list()
 	
 	if(perform == "run"){
-		if(length(all.variables) >= 1){
+		if(length(all.variables) > 1){
 			
-			for(variable in all.variables){
+			groupVars <- options$fixedFactors
+			groupVars <- unlist(groupVars)
+			
+			groupCol <- dataset[ , .v(groupVars)]
+			varLevels <- levels(groupCol)
+			
+			for(variable in varLevels){
 				
-				column <- dataset[, .v(variable) ]
-				
-				if(variable != factor.variables){
+					column <- dataset[ , .v(options$dependent)]
+					column <- column[which(groupCol == variable)]
 					
 					posteriorSummary <- .posteriorSummaryGroupMean(variable=column, descriptivesPlotsCredibleInterval=options$CredibleInterval/100)
                     ciLower <- .clean(posteriorSummary$ciLower)
@@ -277,9 +320,6 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 					
 					result[[length(result) + 1]] <- list(v = variable, N = .clean(length(column)), mean = .clean(mean(column)), sd = .clean(sd(column)), 
 													se = .clean(sd(column)/sqrt(length(column))), lowerCI = ciLower, upperCI = ciUpper)			
-				} else {
-					result[[length(result) + 1]] <- list(v = variable, N = .clean(length(column)), mean = "", sd= "", se = "", lowerCI = "", upperCI = "")	
-				}
 			}
 		} else {
 			result[[length(result) + 1]] <- list(v = ".", N = ".", mean = ".", sd= ".", se = ".")	
@@ -297,4 +337,131 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 	
 	return(descriptives)
 	
+}
+
+.bainDescriptivesPlot <- function(dataset, options, perform) {
+
+	descriptivesPlot <- list()
+	descriptivesPlot[["title"]] <- "Descriptives plot"
+	descriptivesPlot[["width"]]  <- options$plotWidth
+	descriptivesPlot[["height"]] <- options$plotHeight
+	descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+	
+	groupVars <- options$fixedFactors
+	groupVars <- unlist(groupVars)
+
+	if (perform == "run" && !is.null(groupVars) && options$dependent != "" && options$fixedFactors != "") {
+
+		groupVarsV <- .v(groupVars)
+		dependentV <- .v(options$dependent)
+
+		summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV,
+						conf.interval = options$CredibleInterval, na.rm = TRUE, .drop = FALSE, errorBarType = TRUE)
+
+		colnames(summaryStat)[which(colnames(summaryStat) == dependentV)] <- "dependent"
+		colnames(summaryStat)[which(colnames(summaryStat) == .v(options$fixedFactors))] <- "plotHorizontalAxis"
+
+		base_breaks_x <- function(x){
+			b <- unique(as.numeric(x))
+			d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
+		}
+
+		base_breaks_y <- function(x, plotErrorBars = TRUE){
+				ci.pos <- c(x[,"dependent"], x[,"ciLower"], x[,"ciUpper"])
+				b <- pretty(ci.pos)
+				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+		}
+
+			summaryStatSubset <- summaryStat
+			#########################3
+			groupVars <- options$fixedFactors
+			groupVars <- unlist(groupVars)
+			
+			groupCol <- dataset[ , .v(groupVars)]
+			varLevels <- levels(groupCol)
+			
+			ciLower <- NULL
+			ciUpper <- NULL
+			
+			for(variable in varLevels){
+				
+					column <- dataset[ , .v(options$dependent)]
+					column <- column[which(groupCol == variable)]
+					
+					posteriorSummary <- .posteriorSummaryGroupMean(variable=column, descriptivesPlotsCredibleInterval=options$CredibleInterval/100)
+					ciLower <- c(ciLower,.clean(posteriorSummary$ciLower))            
+					ciUpper <- c(ciUpper,.clean(posteriorSummary$ciUpper))
+							
+			}
+			
+			summaryStatSubset$ciLower <- ciLower
+			summaryStatSubset$ciUpper <- ciUpper
+			
+			summaryStat <- summaryStatSubset
+
+			p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
+										y=dependent,
+										group=1))
+
+
+			pd <- ggplot2::position_dodge(.2)
+			p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
+														ymax=ciUpper),
+														colour="black", width=.2, position=pd)
+
+
+		p <- p + ggplot2::geom_line(position=pd, size = .7) +
+			ggplot2::geom_point(position=pd, size=4) +
+			ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
+			ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
+			ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
+			ggplot2::ylab(options$dependent) +
+			ggplot2::xlab(groupVars) +
+			#ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
+			ggplot2::theme_bw() +
+			ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
+				panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+				panel.grid.major=ggplot2::element_blank(),
+				axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
+				axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+				panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+				plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+				legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+				panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+				legend.key = ggplot2::element_blank(), #legend.key.width = grid::unit(10,"mm"),
+				legend.title = ggplot2::element_text(size=12),
+				legend.text = ggplot2::element_text(size = 12),
+				axis.ticks = ggplot2::element_line(size = 0.5),
+				axis.ticks.margin = grid::unit(1,"mm"),
+				axis.ticks.length = grid::unit(3, "mm"),
+				plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
+			base_breaks_y(summaryStat, TRUE) +
+			base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
+
+
+			descriptivesPlot[["title"]] <- "Descriptives Plot"
+
+
+			content <- .writeImage(width = options$plotWidth,
+								   height = options$plotHeight,
+								   plot = p, obj = TRUE)
+
+			
+			descriptivesPlot[["data"]] <- content[["png"]]
+			descriptivesPlot[["obj"]] <- content[["obj"]]
+			descriptivesPlot[["convertible"]] <- TRUE
+
+			descriptivesPlot[["status"]] <- "complete"
+			
+		} else {
+			
+			descriptivesPlot[["data"]] <- ""
+			
+		}
+		
+		return(descriptivesPlot)
+
 }
