@@ -2241,8 +2241,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		yVar <- standResid$y
 
 		# Format x ticks
-		xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-		xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+		xlow <- min(pretty(xVar))
+		xhigh <- max(pretty(xVar))
 		xticks <- pretty(c(xlow, xhigh))
 		
 		# format x labels
@@ -2256,8 +2256,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 
 		# Format y ticks
-		ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)))
-		yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)))        
+		ylow <- min(pretty(yVar))
+		yhigh <- max(pretty(yVar))        
 		yticks <- pretty(c(ylow, yhigh))
 		
 		# format y labels

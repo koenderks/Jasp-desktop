@@ -3331,11 +3331,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     xVar <- d$xx
     res <- d$yy
 
-    xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-    xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+    xlow <- min(pretty(xVar))
+    xhigh <- max(pretty(xVar))
     xticks <- pretty(c(xlow, xhigh))
-    ylow <- min((min(res) - 0.1* min(res)), min(pretty(res)))
-    yhigh <- max((max(res) + 0.1* max(res)), max(pretty(res)))
+    ylow <- min(pretty(res))
+    yhigh <- max(pretty(res))
 
     yticks <- pretty(c(ylow, yhigh, 0))
 	
@@ -3436,12 +3436,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     xVar <- d$x
     yVar <- d$y
 
-    xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-    xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+    xlow <- min(pretty(xVar))
+    xhigh <- max(pretty(xVar))
     xticks <- pretty(c(xlow, xhigh))
 	
-    ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)))
-    yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)))
+    ylow <- min(pretty(yVar))
+    yhigh <- max(pretty(yVar))
     yticks <- pretty(c(ylow, yhigh))
 
     yLabs <- vector("character", length(yticks))

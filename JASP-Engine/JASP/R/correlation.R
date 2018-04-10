@@ -723,11 +723,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
     bestModel <- 1 # which.min(Bic)
 
-    xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-    xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+    xlow <- min(pretty(xVar))
+    xhigh <- max(pretty(xVar))
     xticks <- pretty(c(xlow, xhigh))
-    ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-    yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+    ylow <- min(min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+    yhigh <- max(max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
 
 
     yticks <- pretty(c(ylow, yhigh))
