@@ -1885,7 +1885,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       ggplot2::ylab(variable) +
       base_breaks_y(y)
       
-    p <- JASPgraphs::themeJasp(p, legend.position="none")
+    p <- JASPgraphs::themeJasp(p, legend.position="none", xAxis = FALSE)
 
 
     image <- .writeImage(width = options$plotWidth,
