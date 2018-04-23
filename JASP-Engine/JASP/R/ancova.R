@@ -2118,14 +2118,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			}
 
+			nrowLegend <- min(10, nlevels(summaryStatSubset$plotSeparateLines))
+			guideLegend <- ggplot2::guide_legend(nrow = nrowLegend, title = options$plotSeparateLines)
+			
 			p <- p + ggplot2::geom_line(position=pd, size = .7) +
 				ggplot2::geom_point(position=pd, size=4) +
-				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
+				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=guideLegend) +
+				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=guideLegend) +
+				ggplot2::scale_color_manual(values = rep("black",200),guide=guideLegend) +
 				ggplot2::ylab(options$dependent) +
 				ggplot2::xlab(options$plotHorizontalAxis) +
-				ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
 				base_breaks_y(summaryStat, options$plotErrorBars) +
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 				
