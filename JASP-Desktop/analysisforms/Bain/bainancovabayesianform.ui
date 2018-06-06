@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>645</width>
-    <height>695</height>
+    <height>819</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -558,7 +558,7 @@
           <number>0</number>
          </property>
          <item row="0" column="1">
-          <widget class="BoundTextEdit" name="model"/>
+          <widget class="BainTextEdit" name="model"/>
          </item>
         </layout>
        </widget>
@@ -671,11 +671,6 @@
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/boundtextedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -686,14 +681,19 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BainTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">widgets/baintextedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

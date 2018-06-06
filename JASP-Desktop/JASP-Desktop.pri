@@ -149,7 +149,9 @@ SOURCES += \
     $$PWD/jsonutilities.cpp \
     $$PWD/backstage/backstagedatalibrary.cpp \
     $$PWD/backstage/datalibrarylistmodel.cpp \
-    $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp
+    $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp \
+    $$PWD/widgets/baintextedit.cpp \
+    $$PWD/widgets/textmodelbain.cpp
 
 
 HEADERS  += \
@@ -315,7 +317,9 @@ HEADERS  += \
     $$PWD/jsonutilities.h \
     $$PWD/backstage/backstagedatalibrary.h \
     $$PWD/backstage/datalibrarylistmodel.h \
-    $$PWD/backstage/datalibrarybreadcrumbsmodel.h
+    $$PWD/backstage/datalibrarybreadcrumbsmodel.h \
+    $$PWD/widgets/baintextedit.h \
+    $$PWD/widgets/textmodelbain.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
