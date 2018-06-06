@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>645</width>
-    <height>819</height>
+    <height>785</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -132,19 +132,19 @@
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
-          <verstretch>1</verstretch>
+          <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>80</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>80</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="selectionMode">
@@ -507,6 +507,13 @@
           <widget class="BoundCheckBox" name="BFplot">
            <property name="text">
             <string>Bayes factor comparison</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="plotDescriptives">
+           <property name="text">
+            <string>Descriptives plot</string>
            </property>
           </widget>
          </item>
