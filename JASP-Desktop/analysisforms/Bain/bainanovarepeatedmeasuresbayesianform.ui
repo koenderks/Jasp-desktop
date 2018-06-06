@@ -801,7 +801,7 @@
           <number>0</number>
          </property>
          <item row="0" column="1">
-          <widget class="BoundTextEdit" name="model"/>
+          <widget class="BainTextEdit" name="model"/>
          </item>
         </layout>
        </widget>
@@ -860,11 +860,6 @@
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/boundtextedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -873,6 +868,11 @@
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
    <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BainTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">widgets/baintextedit.h</header>
   </customwidget>
   <customwidget>
    <class>BoundListView</class>

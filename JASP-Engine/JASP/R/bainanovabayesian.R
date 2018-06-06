@@ -210,7 +210,6 @@ BainAnovaBayesian <- function (dataset = NULL, options, state = NULL, perform = 
 			
 			p <- try(silent= FALSE, expr= {
 				res <- do.call(Bain::Bain_anova, inpt)
-				#res <- Bain::Bain_anova(X = dataset, dep_var = dependent, group = group, ERr1, IRr1, ERr2, IRr2)
 				run <- TRUE
 			})
 		}

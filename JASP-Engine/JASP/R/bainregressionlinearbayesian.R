@@ -202,12 +202,17 @@ BainRegressionLinearBayesian <- function (dataset = NULL, state = NULL, options,
 			inpt <- list()
 			inpt[[1]] <- formula
 			inpt[[2]] <- dataset
-			inpt[[3]] <- options$standardized
 			inpt <- c(inpt, lisst)
+			inpt[[length(inpt) + 1]] <- NULL # covariates_hypo
+			inpt[[length(inpt) + 2]] <- options$standardized
+			if(length(restrictions[[1]]) > 1){
+				names(inpt) <- c("formula", "data", "ERr", "IRr", paste0(c("ERr", "IRr"), rep(1:(length(restrictions[[1]])-1), each = 2)), "covariates_hypo", "standardize")
+			} else {
+				names(inpt) <- c("formula", "data", "ERr", "IRr" , "covariates_hypo", "standardize")
+			}
 			
 			p <- try(silent= FALSE, expr= {
 				res <- do.call(Bain::Bain_regression, inpt)
-				#res <- Bain::Bain_regression(formula = formula, data = dataset, standardize = options$standardized, ERr1, IRr1, ERr2, IRr2)
 				run <- TRUE
 			})
 			

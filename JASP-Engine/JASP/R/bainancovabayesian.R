@@ -221,7 +221,6 @@ BainAncovaBayesian	 <- function (dataset = NULL, options, state = NULL, perform 
 			
 			p <- try(silent= FALSE, expr= {
 				res <- do.call(Bain::Bain_ancova, inpt)
-				#res <- Bain::Bain_ancova(X = dataset, dep_var = dependent, covariates = covariates, group = group, ERr1, IRr1, ERr2, IRr2)
 				run <- TRUE
 			})
 			

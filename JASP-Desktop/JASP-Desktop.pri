@@ -150,6 +150,8 @@ SOURCES += \
     $$PWD/backstage/backstagedatalibrary.cpp \
     $$PWD/backstage/datalibrarylistmodel.cpp \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp \
+    $$PWD/widgets/baintextedit.cpp \
+    $$PWD/widgets/textmodelbain.cpp \
     $$PWD/settings.cpp
 
 
@@ -317,6 +319,8 @@ HEADERS  += \
     $$PWD/backstage/backstagedatalibrary.h \
     $$PWD/backstage/datalibrarylistmodel.h \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.h \
+    $$PWD/widgets/baintextedit.h \
+    $$PWD/widgets/textmodelbain.h \
     $$PWD/settings.h
 
 FORMS += \
