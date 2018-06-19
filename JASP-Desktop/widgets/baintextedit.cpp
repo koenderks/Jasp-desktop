@@ -80,11 +80,12 @@ void BainTextEdit::keyPressEvent(QKeyEvent *event)
 {
 	if (_model != NULL)
 	{
-		if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter))
+		int modifiers = Qt::ControlModifier | Qt::MetaModifier;
+		if ((event->modifiers() & modifiers) && (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter))
 		{
 			emit applyRequest();
-		}
-		else
+		} 
+		else 
 		{
 			QTextEdit::keyPressEvent(event);
 		}
