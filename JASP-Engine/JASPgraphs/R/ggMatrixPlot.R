@@ -1,9 +1,9 @@
 addVerticalLabels <- function(totalGraph, graphs2add, x, yIncrement, width, height, yOffset = 0) {
-    
+
     for (i in seq_along(graphs2add)) {
         if (!is.null(graphs2add[[i]])) {
             totalGraph <- totalGraph + 
-                cowplot::draw_plot(graphs2add[[i]], 
+                .draw_plot(graphs2add[[i]], 
                                    x = x, 
                                    y = yOffset + yIncrement * (i-1), 
                                    width = width, 
@@ -18,7 +18,7 @@ addHorizontalLabels <- function(totalGraph, graphs2add, y, xIncrement, width, he
     for (i in seq_along(graphs2add)) {
         if (!is.null(graphs2add[[i]])) {
             totalGraph <- totalGraph + 
-                cowplot::draw_plot(graphs2add[[i]], 
+                .draw_plot(graphs2add[[i]], 
                                    x = xOffset + xIncrement * (i-1), 
                                    y = y, 
                                    width = width, 
@@ -34,7 +34,7 @@ addCenterPlots <- function(totalGraph, plotMatrix, xIncrement, yIncrement, xOffs
         for (j in seq_len(ncol(plotMatrix))) {
             if (!is.null(plotMatrix[[i, j]])) {
                 totalGraph <- totalGraph + 
-                    cowplot::draw_plot(plotMatrix[[i, j]], 
+                    .draw_plot(plotMatrix[[i, j]], 
                                        x = xOffset + xIncrement * (j-1), 
                                        y = yOffset + yIncrement * (i-1), 
                                        width = xIncrement, 
@@ -391,7 +391,7 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
                                  labelSize = .4*graphOptions("fontsize"),
                                  scaleXYlabels = c(.9,.9),
                                  debug = FALSE) {
-    
+
     removeXYlabels <- match.arg(removeXYlabels)
     if (is.null(plotList) && debug) {
         
@@ -441,6 +441,7 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
     # browser()
     # empty plot
     totalGraph <- cowplot::ggdraw(xlim = c(0, 1), ylim = c(0, 1))
+
     # labels left of plots
     if (hasLeftLab) {
         totalGraph <- addVerticalLabels(totalGraph,
@@ -490,4 +491,57 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
                                  yOffset = firstRowHeight * nr + (hasBottomLab)*firstColHeight)
     return (totalGraph)
     
+}
+
+.draw_plot <- function (plot, x = 0, y = 0, width = 1, height = 1, scale = 1) 
+{
+    if (!methods::is(plot, "grob")) 
+        plot <- .plot_to_gtable(plot)
+    cowplot::draw_grob(plot, x, y, width, height, scale)
+}
+
+.plot_to_gtable <- function (plot) 
+{
+    if (methods::is(plot, "function") || methods::is(plot, "recordedplot")) {
+        if (!requireNamespace("gridGraphics", quietly = TRUE)) {
+            warning("Package `gridGraphics` is required to handle base-R plots. Substituting empty plot.", 
+                    call. = FALSE)
+            u <- grid::unit(1, "null")
+            gt <- gtable::gtable_col(NULL, list(grid::nullGrob()), 
+                                     u, u)
+            gt$layout$clip <- "inherit"
+            gt
+        }
+        else {
+            cur_dev <- grDevices::dev.cur()
+            tree <- grid::grid.grabExpr(gridGraphics::grid.echo(plot))
+            grDevices::dev.set(cur_dev)
+            u <- grid::unit(1, "null")
+            gt <- gtable::gtable_col(NULL, list(tree), u, u)
+            gt$layout$clip <- "inherit"
+            gt
+        }
+    }
+    else if (methods::is(plot, "ggplot")) {
+        cur_dev <- grDevices::dev.cur()
+        grDevices::cairo_pdf(tempfile())
+        plot <- ggplot2::ggplotGrob(plot)
+        on.exit(grDevices::dev.off())
+        grDevices::dev.set(cur_dev)
+        plot
+    }
+    else if (methods::is(plot, "gtable")) {
+        plot
+    }
+    else if (methods::is(plot, "grob")) {
+        u <- grid::unit(1, "null")
+        gt <- gtable::gtable_col(NULL, list(plot), u, u)
+        gt$layout$clip <- "inherit"
+        gt
+    }
+    else {
+        stop("Argument needs to be of class \"ggplot\", \"gtable\", \"grob\", ", 
+             "\"recordedplot\", or a function that plots to an R graphics", 
+             "device when called, but is a ", class(plot))
+    }
 }
