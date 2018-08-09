@@ -432,65 +432,68 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
     defArgs <- list(xOffset = 0, yOffset = 0) # fill this thing with more default arguments
     nmsDots <- names(dots)
     defArgs[names(defArgs) %in% nmsDots] <- dots[nmsDots[nmsDots %in% names(defArgs)]]
-    
-    firstColHeight <- .05
-    firstRowWidth <- .05
-    
-    firstColWidth <- (1 - firstRowWidth*(0.1 + hasLeftLab + hasRightLab)) / nc
-    firstRowHeight <- (1 - firstRowWidth*(0.1 + hasTopLab + hasBottomLab)) / nr
-    # browser()
-    # empty plot
-    totalGraph <- cowplot::ggdraw(xlim = c(0, 1), ylim = c(0, 1))
+ 
+    w <- .25
+    h <- .25
+    width <- rep(1, nc)
+    height <- rep(1, nr)
 
     # labels left of plots
     if (hasLeftLab) {
-        totalGraph <- addVerticalLabels(totalGraph,
-                                        graphs2add = leftLabels,
-                                        x = 0, 
-                                        yIncrement = -firstRowHeight, 
-                                        width = firstRowWidth,
-                                        height = firstRowHeight,
-                                        yOffset = firstRowHeight * (nr - 1) + hasBottomLab*firstColHeight + defArgs$yOffset)
+        width <- c(w, width)
+        plotList <- cbind(
+            leftLabels,
+            plotList
+        )
     }
-    # labels above plots
-    if (hasTopLab) {
-        totalGraph <- addHorizontalLabels(totalGraph, 
-                                          graphs2add = topLabels,
-                                          y = 1 - firstColHeight, 
-                                          xIncrement = firstColWidth, 
-                                          width = firstColWidth, 
-                                          height = firstColHeight,
-                                          xOffset = hasLeftLab*firstRowWidth + defArgs$xOffset)
+    # labels right of plots
+    if (hasRightLab) { 
+        width <- c(width, w)
+        plotList <- cbind(
+            plotList,
+            rightLabels
+        )
     }
     
-    if (hasRightLab) { # labels right of plots
-        totalGraph <- addVerticalLabels(totalGraph, 
-                                        graphs2add = rightLabels,
-                                        x = 1 - firstRowWidth, 
-                                        yIncrement = -firstRowHeight, 
-                                        width = firstRowWidth,
-                                        height = firstRowHeight,
-                                        yOffset = firstRowHeight * (nr - 1) + hasBottomLab*firstColHeight + defArgs$yOffset)
+    if (hasTopLab || hasBottomLab) {
+        
+        # empty ggplot to fill corners of the plot
+        empty <- list(ggplot2::ggplot() + ggplot2::theme_void())
+        
+        # labels below of plots
+        if (hasTopLab) {
+            height <- c(h, height)
+            if (hasLeftLab) 
+                topLabels <- c(empty, topLabels)
+            if (hasRightLab)
+                topLabels <- c(topLabels, empty)
+            plotList <- rbind(topLabels, plotList)
+        }
+        
+        # labels above of plots
+        if (hasBottomLab) {
+            height <- c(height, h)
+            if (hasLeftLab) 
+                bottomLabels <- c(empty, bottomLabels)
+            if (hasRightLab)
+                bottomLabels <- c(bottomLabels, empty)
+            plotList <- rbind(plotList, bottomLabels)
+        }
     }
+
+    d <- dim(plotList)
+    f <- tempfile()
+    grDevices::png(f)
+    totalGraph <- gridExtra::arrangeGrob(grobs = t(plotList), 
+                                 nrow = d[1L], ncol = d[2L],
+                                 widths = width, heights = height)
+    dev.off()
+    if (file.exists(f))
+        try(file.remove(f))
+    class(totalGraph) <- c(class(totalGraph), "ggMatrixplot", "JASPgraphs")
     
-    if (hasBottomLab) { # labels below plots
-        totalGraph <- addHorizontalLabels(totalGraph,
-                                          graphs2add = bottomLabels,
-                                          y = 0, 
-                                          xIncrement = firstColWidth, 
-                                          width = firstColWidth, 
-                                          height = firstColHeight,
-                                          xOffset = hasLeftLab*firstRowWidth + defArgs$xOffset)
-    }
-    
-    # actually include plots
-    totalGraph <- addCenterPlots(totalGraph, plotList,
-                                 xIncrement = firstColWidth, 
-                                 yIncrement = -firstRowHeight, 
-                                 xOffset = hasLeftLab*firstRowWidth,
-                                 yOffset = firstRowHeight * nr + (hasBottomLab)*firstColHeight)
-    return (totalGraph)
-    
+    return(totalGraph)
+
 }
 
 .draw_plot <- function (plot, x = 0, y = 0, width = 1, height = 1, scale = 1) 
