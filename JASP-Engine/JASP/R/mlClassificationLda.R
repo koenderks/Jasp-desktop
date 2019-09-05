@@ -351,7 +351,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 
   target <- classificationResult[["train"]][, .v(options[["target"]])]
   lda.fit.scaled <- cbind.data.frame(
-    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]])]), scale = FALSE) %*% classificationResult[["scaling"]], 
+    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]]), drop = FALSE]), scale = FALSE) %*% classificationResult[["scaling"]], 
     V2 = classificationResult[["train"]][,.v(options[["target"]])]
   )
   
