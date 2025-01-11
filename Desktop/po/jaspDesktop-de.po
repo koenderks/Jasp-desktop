@@ -5627,3 +5627,7 @@ msgstr "Skalierung des Menübandes (%): "
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
 msgstr "Legen Sie den Skalierungsgrad der Höhe des Menübandes fest."
+
+msgctxt "TabView|"
+msgid "Double click to edit this name"
+msgstr ""
