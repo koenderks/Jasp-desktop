@@ -2,16 +2,17 @@
 #define DATABASEINTERFACE_H
 
 #include "columntype.h"
-#include <sqlite3.h>
 #include <string>
 #include "utils.h"
 #include <json/json.h>
 #include "version.h"
-
+#include <functional>
 
 class DataSet;
 class Column;
 class DatabaseInterface;
+struct sqlite3_stmt;
+struct sqlite3;
 
 ///Single point of interaction with sqlite, can later be turned into an interface for supporting other sql
 ///
@@ -60,7 +61,7 @@ public:
 				~DatabaseInterface();
 	std::string dbFile(bool onlyPostfix = false) const;									///< Convenience function for getting the filename where sqlite db should be
 
-	static		DatabaseInterface * singleton() { return _singleton; }					///< There can be only one! https://www.youtube.com/watch?v=sqcLjcSloXs
+	static		DatabaseInterface * singleton();					///< There can be only one! https://www.youtube.com/watch?v=sqcLjcSloXs
 
 	bool		hasConnection() { return _db; }
 	void		upgradeDBFromVersion(Version originalVersion);							///< Ensures that the database has all the fields configured as required for the current JASP version, useful when loading older sqlite-containing jasp-files

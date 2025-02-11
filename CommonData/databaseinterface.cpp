@@ -1,10 +1,12 @@
 ﻿#include "databaseinterface.h"
 #include "columntype.h"
 #include "tempfiles.h"
+#include <sqlite3.h>
 #include "version.h"
 #include "dataset.h"
 #include "timers.h"
 #include "utils.h"
+#include <cassert>
 #include "log.h"
 
 DatabaseInterface * DatabaseInterface::_singleton = nullptr;
@@ -302,7 +304,7 @@ bool DatabaseInterface::filterSelect(int filterIndex, boolvec & bools)
 		[&](sqlite3_stmt *){ }, [&](size_t row, sqlite3_stmt * stmt)
 		{
 			int val			= sqlite3_column_int(stmt, 0);
-				changed		= changed || bools[row] != val;
+				changed		= changed || bools[row] != bool(val);
 				bools[row]	= val;
 		});
 	}
@@ -1365,6 +1367,17 @@ std::string DatabaseInterface::dbFile(bool onlyName) const
 		return memoryName;
 
 	return onlyName ? fileName : Utils::osPath(TempFiles::sessionDirName() + "/" + fileName).string();
+}
+
+DatabaseInterface *DatabaseInterface::singleton() 
+{ 
+	if(!_singleton)
+	{
+		Log::log() << "No DatabaseInterface::singleton available here yet, creating an interface for internal.sqlite without recreating the dbstructure" << std::endl;
+		_singleton = new DatabaseInterface(false);
+	}
+	
+	return _singleton; 
 }
 
 void DatabaseInterface::runQuery(const std::string & query, std::function<void(sqlite3_stmt *stmt)> bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> processRow)

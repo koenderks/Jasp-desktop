@@ -51,7 +51,7 @@ set(
 	"${PROJECT_SOURCE_DIR}/QMLComponents/components"
     CACHE
     PATH
-    "Path used to locate CMake modules by Qt Creator"
+	"Path used to locate QML modules by Qt Creator"
     FORCE
 )
 
@@ -94,7 +94,7 @@ target_include_directories(
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${PROJECT_SOURCE_DIR}/Common
-	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+    ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
     ${PROJECT_SOURCE_DIR}/CommonData
     ${PROJECT_SOURCE_DIR}/QMLComponents
     # ReadStat
@@ -110,10 +110,10 @@ target_include_directories(
 
 target_link_libraries(
     JASP
-    PUBLIC
-    Common
-    CommonData
-    QMLComponents
+	PUBLIC
+	Common
+	CommonData
+	QMLComponentsplugin
     Qt::Core
     Qt::Gui
     Qt::OpenGL
@@ -157,7 +157,6 @@ target_link_libraries(
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 )
 
-
 target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
 
 if(NOT WINDOWS)
@@ -165,9 +164,9 @@ if(NOT WINDOWS)
 
   target_link_libraries(
     JASP
-    PUBLIC
-      # When using Conan, we need to provide the static libraries directly, for some reason!
-      ${Iconv_LIBRARY_LIST})
+	PRIVATE
+    # When using Conan, we need to provide the static libraries directly, for some reason!
+    ${Iconv_LIBRARY_LIST})
 endif()
 
 if(LINUX)
@@ -218,7 +217,7 @@ qt_add_resources(
 file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
 qt_add_resources(
   JASP
-  "widgets"
+  "widgetsandtheme"
   PREFIX
   "/"
   BASE

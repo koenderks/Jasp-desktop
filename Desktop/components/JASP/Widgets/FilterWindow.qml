@@ -1,6 +1,6 @@
-import QtQuick			2.12
-import QtQuick.Controls 2.12
-import JASP.Controls	1.0 as JaspControls
+import QtQuick
+import QtQuick.Controls
+import JASP.Controls	as JaspControls
 import "FilterConstructor"
 import JASP
 
@@ -301,7 +301,7 @@ FocusScope
 
 						TextArea
 						{
-							RSyntaxHighlighterQuick
+							JaspControls.RSyntaxHighlighterQuick
 							{
 								textDocument:		filterGeneratedEdit.textDocument
 							}
@@ -351,7 +351,7 @@ FocusScope
 						TextArea
 						{
 
-							RSyntaxHighlighterQuick
+							JaspControls.RSyntaxHighlighterQuick
 							{
 								textDocument:		filterEdit.textDocument
 							}

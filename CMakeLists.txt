@@ -11,6 +11,7 @@ if (UNIX)
 add_compile_options(-Werror=return-type)
 endif()
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(APPLE)
 
@@ -58,7 +59,7 @@ project(
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
 
-#needed for R-Interface and QMLComponents for them to build stuff porperly when *inside* JASP
+#needed for R-Interface and QMLComponents for them to build stuff properly when *inside* JASP
 add_definitions(-DBUILDING_JASP)
 set(BUILDING_JASP TRUE)
 
@@ -93,6 +94,13 @@ include(Config)
 # ------ Conan Dependency Manager
 
 include(Conan)
+# Conan set the CMAKE_MSVC_RUNTIME_LIBRARY to MultiThreadedDLL (this adds the /MD flag, cf conan_toolchain.cmake)
+# But on debug mode it does not set it to the MultiThreadedDebugDLL (/MDd): this can lead to a crash if a library uses a Qt function in a static method, as in DynamicRuntimeInfo)
+if(WIN32 AND (CMAKE_MSVC_RUNTIME_LIBRARY STREQUAL "$<$<CONFIG:Debug>:MultiThreadedDLL>"))
+	set(CMAKE_MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Debug>:MultiThreadedDebugDLL>")
+	message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY is set to ${CMAKE_MSVC_RUNTIME_LIBRARY}")
+endif()
+
 
 # ------ JASP Config
 

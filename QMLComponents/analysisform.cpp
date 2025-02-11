@@ -132,7 +132,7 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 				bindTo(Json::nullValue);
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
 				// For this, bind all controls to null and wait for the controls to be completely destroyed.
-				QTimer::singleShot(0, [=](){
+				QTimer::singleShot(0, this, [this, options](){
 					bindTo(options);
 					blockValueChangeSignal(false, false);
 					_analysis->boundValueChangedHandler();
@@ -456,7 +456,7 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 			// Cannot instantiate _controlErrorMessageComponent in the constructor (it crashes), and it might be too late in the formCompletedHandler since error can be generated earlier
 			// So create it when it is needed for the first time.
 			if (!_controlErrorMessageComponent)
-				_controlErrorMessageComponent = new QQmlComponent(qmlEngine(this), "qrc:///components/JASP/Controls/ControlErrorMessage.qml");
+				_controlErrorMessageComponent = new QQmlComponent(qmlEngine(this), "qrc:/jasp-stats.org/imports/JASP/Controls/components/JASP/Controls/ControlErrorMessage.qml");
 
 			controlErrorMessageItem = qobject_cast<QQuickItem*>(_controlErrorMessageComponent->create(QQmlEngine::contextForObject(this)));
 			if (!controlErrorMessageItem)
@@ -913,7 +913,7 @@ QString AnalysisForm::helpMD() const
 	orderedControls.removeIf([](JASPControl* c) { return c->helpMD().isEmpty(); });
 
 	if (orderedControls.length() > 0 && orderedControls[0]->controlType() != JASPControl::ControlType::Expander)
-		// If the first control is an ExpanderButton, then it adds already a line
+		// If the first control is an Section, then it adds already a line
 		markdown << "\n---\n";
 
 	for(JASPControl * control : orderedControls)

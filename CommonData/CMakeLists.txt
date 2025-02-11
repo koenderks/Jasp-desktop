@@ -14,7 +14,7 @@ file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 file(GLOB_RECURSE SQL_FILES		"${CMAKE_CURRENT_LIST_DIR}/*.sql")
 
-add_library(CommonData ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
+add_library(CommonData STATIC ${SOURCE_FILES} ${HEADER_FILES} ${SQL_FILES})
 
 
 if(LINUX)
@@ -33,19 +33,21 @@ target_include_directories(
 	${R_INCLUDE_PATH}
 	${R_HOME_PATH}/include
 	${RCPP_PATH}/include
+  ${Boost_INCLUDE_DIRS}
+	PRIVATE
+	SQLite::SQLite3
 	)
 
 target_link_libraries(
-	CommonData
-	PUBLIC
-	Common
-	LibArchive::LibArchive
-	SQLite::SQLite3
-	#
-	$<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+    CommonData
+    PUBLIC
+    LibArchive::LibArchive
+#    Common
+    SQLite::SQLite3
+)
 
 target_compile_definitions(
-  CommonData PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
+  CommonData PUBLIC
                 $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>
 				JSONCPP_NO_LOCALE_SUPPORT	)
 

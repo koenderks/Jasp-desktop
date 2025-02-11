@@ -1,5 +1,5 @@
 #include "log.h"
-#include <regex>
+#include <cassert>
 #include "timers.h"
 #include "dataset.h"
 #include "columnencoder.h"
@@ -200,7 +200,7 @@ Column * DataSet::newColumn(const std::string &name)
 	return col;
 }
 
-qsizetype DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
+size_t DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
 	if(columnIndex >= columnCount())
 		return 0;
