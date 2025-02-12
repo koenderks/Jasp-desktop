@@ -19,6 +19,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include "utilities/codepageswindows.h"
+#include "utilities/settings.h"
 
 #include <cstring>
 #include <stdexcept>
